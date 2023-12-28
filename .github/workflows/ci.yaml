@@ -1,0 +1,26 @@
+name: thorsten_interpreter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  interpreter_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "move code over with checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Setup Go 1.21
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+          # You can test your matrix by printing the current Go version
+      - name: Display Go version
+        run: go version
+      - name: Install dependencies
+        run: go get .
+      - name: Build
+        run: go build -v ./...
+      - name: Test with the Go CLI
+        run: go test ./... -v -cover
