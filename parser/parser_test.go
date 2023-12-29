@@ -2,8 +2,9 @@ package parser
 
 import (
 	"fmt"
-	"github.com/Neal-C/interpreter-in-go/ast"
-	"github.com/Neal-C/interpreter-in-go/lexer"
+	"github.com/Neal-C/compiler-in-go/ast"
+	"github.com/Neal-C/compiler-in-go/lexer"
+
 	"log"
 	"testing"
 )

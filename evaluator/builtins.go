@@ -2,7 +2,7 @@ package evaluator
 
 import (
 	"fmt"
-	"github.com/Neal-C/interpreter-in-go/object"
+	"github.com/Neal-C/compiler-in-go/object"
 )
 
 var builtins = map[string]*object.Builtin{

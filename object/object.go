@@ -3,7 +3,7 @@ package object
 import (
 	"bytes"
 	"fmt"
-	"github.com/Neal-C/interpreter-in-go/ast"
+	"github.com/Neal-C/compiler-in-go/ast"
 	"hash/fnv"
 	"log"
 	"strings"

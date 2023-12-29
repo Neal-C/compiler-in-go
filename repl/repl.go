@@ -3,10 +3,10 @@ package repl
 import (
 	"bufio"
 	"fmt"
-	"github.com/Neal-C/interpreter-in-go/evaluator"
-	"github.com/Neal-C/interpreter-in-go/lexer"
-	"github.com/Neal-C/interpreter-in-go/object"
-	"github.com/Neal-C/interpreter-in-go/parser"
+	"github.com/Neal-C/compiler-in-go/evaluator"
+	"github.com/Neal-C/compiler-in-go/lexer"
+	"github.com/Neal-C/compiler-in-go/object"
+	"github.com/Neal-C/compiler-in-go/parser"
 	"io"
 )
 

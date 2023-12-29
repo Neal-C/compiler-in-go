@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/Neal-C/interpreter-in-go/repl"
+	"github.com/Neal-C/compiler-in-go/repl"
 	"os"
 	"os/user"
 )
