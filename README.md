@@ -13,5 +13,11 @@ Prequel repository here : https://github.com/Neal-C/interpreter-in-go
 - Write a Virtual Machine
 
 
+Fun facts 😀 :
+- the LLVM & Clang projects currently consist of around 3 million lines of code. 
+- The GNU Compiler Collection, GCC, is even bigger. 15 million lines of code 😱
+
+
+Huge thanks to [Thorsten Ball](https://github.com/mrnugget)
 
 
