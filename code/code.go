@@ -1,6 +1,7 @@
 package code
 
 import (
+	"encoding/binary"
 	"fmt"
 )
 
@@ -29,4 +30,39 @@ func LookUp(op byte) (*Definition, error) {
 	}
 
 	return definition, nil
+}
+
+// That's how you make bytecode
+
+func Make(op Opcode, operands ...int) []byte {
+	definition, ok := definitions[op]
+
+	if !ok {
+		return []byte{}
+	}
+
+	instructionLen := 1
+
+	for _, width := range definition.OperandsWidth {
+		instructionLen += width
+	}
+
+	instruction := make([]byte, instructionLen)
+	instruction[0] = byte(op)
+
+	for index, operand := range operands {
+
+		width := definition.OperandsWidth[index]
+
+		offset := 1
+
+		switch width {
+		case 2:
+			binary.BigEndian.PutUint16(instruction[offset:], uint16(operand))
+		}
+
+		offset += width
+	}
+
+	return instruction
 }
