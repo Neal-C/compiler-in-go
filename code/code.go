@@ -1,6 +1,7 @@
 package code
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 )
@@ -71,7 +72,42 @@ func Make(op Opcode, operands ...int) []byte {
 }
 
 func (self Instructions) String() string {
-	return ""
+	var out bytes.Buffer
+
+	index := 0
+
+	for index < len(self) {
+		definition, err := LookUp(self[index])
+
+		if err != nil {
+			fmt.Fprintf(&out, "ERROR: %s\n", err)
+			continue
+		}
+
+		operands, read := ReadOperands(definition, self[index+1:])
+
+		fmt.Fprintf(&out, "%04d %s\n", index, self.fmtInstruction(definition, operands))
+
+		index += (1 + read)
+	}
+
+	return out.String()
+
+}
+
+func (self Instructions) fmtInstruction(definition *Definition, operands []int) string {
+	operandCount := len(definition.OperandsWidth)
+
+	if len(operands) != operandCount {
+		return fmt.Sprintf("ERROR: operand len %d does not match defined %d\n", len(operands), operandCount)
+	}
+
+	switch operandCount {
+	case 1:
+		return fmt.Sprintf("%s %d", definition.Name, operands[0])
+	}
+
+	return fmt.Sprintf("ERROR: unhandled operandCount for %s\n", definition.Name)
 }
 
 func ReadOperands(definition *Definition, instructions Instructions) ([]int, int) {
