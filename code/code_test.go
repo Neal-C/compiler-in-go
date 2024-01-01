@@ -47,3 +47,35 @@ func TestInstructionsString(t *testing.T) {
 		t.Errorf("instruction wrongly formatted.\nwant = %q\ngot = %q", expected, concatted.String())
 	}
 }
+
+func TestReadOperands(t *testing.T) {
+	tableTests := []struct {
+		op        Opcode
+		operands  []int
+		bytesRead int
+	}{
+		{OpConstant, []int{65_535}, 2},
+	}
+
+	for _, tt := range tableTests {
+		instruction := Make(tt.op, tt.operands...)
+
+		definition, err := LookUp(byte(tt.op))
+
+		if err != nil {
+			t.Fatalf("definition not found: %q \n", err)
+		}
+
+		operandsRead, numberOfBytesRead := ReadOperands(definition, instruction[1:])
+
+		if numberOfBytesRead != tt.bytesRead {
+			t.Fatalf("numberOfBytesRead wrong. want = %d . got = %d", tt.bytesRead, numberOfBytesRead)
+		}
+
+		for index, want := range tt.operands {
+			if operandsRead[index] != want {
+				t.Errorf("operand wrong. want = %d. got = %d", want, operandsRead[index])
+			}
+		}
+	}
+}

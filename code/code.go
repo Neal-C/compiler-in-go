@@ -9,6 +9,9 @@ type Instructions []byte
 
 type Opcode byte
 
+// When the VM executes OpConstant it retrieves the constant
+// using the operand as an index and pushes it on to the stack.
+
 const (
 	OpConstant Opcode = iota
 )
