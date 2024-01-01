@@ -73,3 +73,23 @@ func Make(op Opcode, operands ...int) []byte {
 func (self Instructions) String() string {
 	return ""
 }
+
+func ReadOperands(definition *Definition, instructions Instructions) ([]int, int) {
+	operands := make([]int, len(definition.OperandsWidth))
+
+	offset := 1
+
+	for index, width := range definition.OperandsWidth {
+		switch width {
+		case 2:
+			operands[index] = int(ReadUint16(instructions[offset:]))
+		}
+		offset += width
+	}
+
+	return operands, offset
+}
+
+func ReadUint16(instruction Instructions) uint16 {
+	return binary.BigEndian.Uint16(instruction)
+}
