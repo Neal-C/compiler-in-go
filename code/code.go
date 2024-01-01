@@ -113,7 +113,7 @@ func (self Instructions) fmtInstruction(definition *Definition, operands []int) 
 func ReadOperands(definition *Definition, instructions Instructions) ([]int, int) {
 	operands := make([]int, len(definition.OperandsWidth))
 
-	offset := 1
+	offset := 0
 
 	for index, width := range definition.OperandsWidth {
 		switch width {
