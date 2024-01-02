@@ -3,6 +3,8 @@ package vm
 import (
 	"fmt"
 	"github.com/Neal-C/compiler-in-go/ast"
+	"github.com/Neal-C/compiler-in-go/compiler"
+	"testing"
 
 	"github.com/Neal-C/compiler-in-go/lexer"
 	"github.com/Neal-C/compiler-in-go/object"
@@ -34,5 +36,48 @@ func testIntegerObject(expected int64, actual object.Object) error {
 	}
 
 	return nil
+
+}
+
+func runVmTests(t *testing.T, tableTests []VmTestCase) {
+	t.Helper()
+
+	for _, tt := range tableTests {
+		program := parse(tt.input)
+
+		myCompiler := compiler.New()
+
+		err := myCompiler.Compile(program)
+
+		if err != nil {
+			t.Fatalf("compiler error: %s", err)
+		}
+
+		myVM := New(myCompiler.ByteCode())
+
+		err := myVM.Run()
+
+		if err != nil {
+			t.Fatalf("vm error: %s", err)
+		}
+
+		stackElement := vm.StackTop()
+
+		testExpectedObject(t, tt.expected, stackElement)
+
+	}
+}
+
+func testExpectedObject(t *testing.T, expected any, actual object.Object) {
+	t.Helper()
+
+	switch expected := expected.(type) {
+	case int:
+		err := testIntegerObject(int64(expected), actual)
+
+		if err != nil {
+			t.Errorf("testIntegerObject failed %s", err)
+		}
+	}
 
 }
