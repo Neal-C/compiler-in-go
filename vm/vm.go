@@ -31,3 +31,18 @@ func (self *VM) StackTop() object.Object {
 
 	return self.stack[self.stackPointer-1]
 }
+
+func (self *VM) Run() error {
+
+	for indexPointer := 0; indexPointer < len(self.instructions); indexPointer++ {
+
+		// type coercion
+		op := code.Opcode(self.instructions[indexPointer])
+
+		switch op {
+
+		}
+	}
+
+	return nil
+}
