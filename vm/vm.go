@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"fmt"
 	"github.com/Neal-C/compiler-in-go/code"
 	"github.com/Neal-C/compiler-in-go/compiler"
 	"github.com/Neal-C/compiler-in-go/object"
@@ -40,9 +41,32 @@ func (self *VM) Run() error {
 		op := code.Opcode(self.instructions[indexPointer])
 
 		switch op {
+		case code.OpConstant:
+			operandIndex := indexPointer + 1
+			constIndex := code.ReadUint16(self.instructions[operandIndex:])
 
+			// increment indexPointer by the bytes size (16 = 2 x bytes )
+			indexPointer += 2
+
+			err := self.push(self.constants[constIndex])
+
+			if err != nil {
+				return err
+			}
 		}
 	}
+
+	return nil
+}
+
+func (self *VM) push(obj object.Object) error {
+
+	if self.stackPointer >= StackSize {
+		return fmt.Errorf("stack overflow : https://stackoverflow.com/")
+	}
+
+	self.stack[self.stackPointer] = obj
+	self.stackPointer++
 
 	return nil
 }
