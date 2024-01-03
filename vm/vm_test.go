@@ -81,3 +81,13 @@ func testExpectedObject(t *testing.T, expected any, actual object.Object) {
 	}
 
 }
+
+func TestIntegerArithmetic(t *testing.T) {
+	testTable := []VmTestCase{
+		{"1", 1},
+		{"2", 2},
+		{"1 + 2", 2}, // TODO: FIXME in the actual book
+	}
+
+	runVmTests(t, testTable)
+}
