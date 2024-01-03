@@ -55,7 +55,7 @@ func runVmTests(t *testing.T, tableTests []VmTestCase) {
 
 		myVM := New(myCompiler.ByteCode())
 
-		err := myVM.Run()
+		err = myVM.Run()
 
 		if err != nil {
 			t.Fatalf("vm error: %s", err)
