@@ -23,3 +23,11 @@ func New(bytecode *compiler.ByteCode) *VM {
 		stackPointer: 0,
 	}
 }
+
+func (self *VM) StackTop() object.Object {
+	if self.stackPointer == 0 {
+		return nil
+	}
+
+	return self.stack[self.stackPointer-1]
+}
