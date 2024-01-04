@@ -105,6 +105,8 @@ func (self Instructions) fmtInstruction(definition *Definition, operands []int) 
 	}
 
 	switch operandCount {
+	case 0:
+		return definition.Name
 	case 1:
 		return fmt.Sprintf("%s %d", definition.Name, operands[0])
 	}

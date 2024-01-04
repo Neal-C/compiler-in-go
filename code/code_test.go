@@ -31,12 +31,12 @@ func TestMake(t *testing.T) {
 
 func TestInstructionString(t *testing.T) {
 	instructions := []Instructions{
-		Make(OpConstant, 1),
+		Make(OpAdd),
 		Make(OpConstant, 2),
 		Make(OpConstant, 65_535),
 	}
 
-	expected := "0000 OpConstant 1\n0003 OpConstant 2\n0006 OpConstant 65535\n"
+	expected := "0000 OpAdd\n0001 OpConstant 2\n0004 OpConstant 65535\n"
 
 	var concatted Instructions
 
