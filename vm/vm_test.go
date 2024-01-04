@@ -86,7 +86,7 @@ func TestIntegerArithmetic(t *testing.T) {
 	testTable := []VmTestCase{
 		{"1", 1},
 		{"2", 2},
-		{"1 + 2", 2}, // TODO: FIXME in the actual book
+		{"1 + 2", 3},
 	}
 
 	runVmTests(t, testTable)
