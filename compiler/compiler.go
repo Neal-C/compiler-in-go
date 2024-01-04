@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"fmt"
 	"github.com/Neal-C/compiler-in-go/ast"
 	"github.com/Neal-C/compiler-in-go/code"
 	"github.com/Neal-C/compiler-in-go/object"
@@ -44,6 +45,13 @@ func (self *Compiler) Compile(node ast.Node) error {
 		err = self.Compile(node.Right)
 		if err != nil {
 			return err
+		}
+
+		switch node.Operator {
+		case "+":
+			self.emit(code.OpAdd)
+		default:
+			return fmt.Errorf("unknown operator : %s", node.Operator)
 		}
 	case *ast.IntegerLiteral:
 		integer := &object.Integer{Value: node.Value}
