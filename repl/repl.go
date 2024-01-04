@@ -3,10 +3,10 @@ package repl
 import (
 	"bufio"
 	"fmt"
-	"github.com/Neal-C/compiler-in-go/evaluator"
+	"github.com/Neal-C/compiler-in-go/compiler"
 	"github.com/Neal-C/compiler-in-go/lexer"
-	"github.com/Neal-C/compiler-in-go/object"
 	"github.com/Neal-C/compiler-in-go/parser"
+	"github.com/Neal-C/compiler-in-go/vm"
 	"io"
 )
 
@@ -14,7 +14,6 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvironment()
 
 	for {
 		fmt.Printf(PROMPT)
@@ -33,10 +32,27 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program, env)
+		myCompiler := compiler.New()
+		err := myCompiler.Compile(program)
 
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
+		if err != nil {
+			fmt.Fprintf(out, "Whoops! compilation failed:\n %s\n", err)
+			continue
+		}
+
+		machine := vm.New(myCompiler.ByteCode())
+
+		err = machine.Run()
+
+		if err != nil {
+			fmt.Fprintf(out, "Whoops! Executing bytecode failed:\n %s\n", err)
+			continue
+		}
+
+		stackTop := machine.StackTop()
+
+		if stackTop != nil {
+			io.WriteString(out, stackTop.Inspect())
 			io.WriteString(out, "\n")
 		}
 	}
