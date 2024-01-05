@@ -62,6 +62,8 @@ func (self *VM) Run() error {
 
 			result := leftValue + rightValue
 			_ = self.push(&object.Integer{Value: result})
+		case code.OpPop:
+			self.pop()
 		}
 	}
 
@@ -84,4 +86,8 @@ func (self *VM) pop() object.Object {
 	returnedObj := self.stack[self.stackPointer-1]
 	self.stackPointer--
 	return returnedObj
+}
+
+func (self *VM) LastPoppedStackElement() object.Object {
+	return self.stack[self.stackPointer]
 }
