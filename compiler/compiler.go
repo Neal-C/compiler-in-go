@@ -32,10 +32,15 @@ func (self *Compiler) Compile(node ast.Node) error {
 		}
 
 	case *ast.ExpressionStatement:
+
 		err := self.Compile(node.Expression)
+
 		if err != nil {
 			return err
 		}
+
+		self.emit(code.OpPop)
+
 	case *ast.InfixExpression:
 		err := self.Compile(node.Left)
 		if err != nil {
