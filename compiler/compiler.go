@@ -67,6 +67,12 @@ func (self *Compiler) Compile(node ast.Node) error {
 	case *ast.IntegerLiteral:
 		integer := &object.Integer{Value: node.Value}
 		self.emit(code.OpConstant, self.addConstants(integer))
+	case *ast.Boolean:
+		if node.Value {
+			self.emit(code.OpTrue)
+		} else {
+			self.emit(code.OpFalse)
+		}
 	}
 
 	return nil
