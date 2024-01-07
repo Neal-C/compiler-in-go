@@ -9,6 +9,9 @@ import (
 
 const StackSize = 2048
 
+var True = &object.Boolean{Value: true}
+var False = &object.Boolean{Value: false}
+
 type VM struct {
 	constants    []object.Object
 	instructions code.Instructions
@@ -55,6 +58,21 @@ func (self *VM) Run() error {
 			}
 		case code.OpAdd, code.OpSub, code.OpMul, code.OpDiv:
 			err := self.executeBinaryOperation(op)
+
+			if err != nil {
+				return err
+			}
+		case code.OpTrue:
+
+			err := self.push(True)
+
+			if err != nil {
+				return err
+			}
+
+		case code.OpFalse:
+
+			err := self.push(False)
 
 			if err != nil {
 				return err
