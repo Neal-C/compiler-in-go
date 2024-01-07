@@ -78,6 +78,12 @@ func testExpectedObject(t *testing.T, expected any, actual object.Object) {
 		if err != nil {
 			t.Errorf("testIntegerObject failed %s", err)
 		}
+	case bool:
+		err := testBooleanObject(bool(expected), actual)
+
+		if err != nil {
+			t.Errorf("testBooleanObject failed: %s", err)
+		}
 	}
 
 }
@@ -99,4 +105,27 @@ func TestIntegerArithmetic(t *testing.T) {
 	}
 
 	runVmTests(t, testTable)
+}
+
+func TestBooleanExpression(t *testing.T) {
+	testTable := []VmTestCase{
+		{"true", true},
+		{"false", false},
+	}
+
+	runVmTests(t, testTable)
+}
+
+func testBooleanObject(expected bool, actual object.Object) error {
+	result, ok := actual.(*object.Boolean)
+
+	if !ok {
+		return fmt.Errorf("actual is not a *object.Bookean. got = %T (%v)", actual, actual)
+	}
+
+	if result.Value != expected {
+		return fmt.Errorf("actual has the wrong value. got = %t, want = %t", result.Value, expected)
+	}
+
+	return nil
 }
