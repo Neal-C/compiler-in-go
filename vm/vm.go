@@ -77,6 +77,12 @@ func (self *VM) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpEqual, code.OpNotEqual, code.OpGreaterThan:
+			err := self.executeComparison(op)
+
+			if err != nil {
+				return err
+			}
 
 		case code.OpPop:
 			self.pop()
@@ -142,4 +148,47 @@ func (self *VM) executeBinaryIntegerOperation(op code.Opcode, left, right object
 		return fmt.Errorf("unknown integer operation: %d", op)
 	}
 	return self.push(&object.Integer{Value: result})
+}
+
+func (self *VM) executeComparison(op code.Opcode) error {
+	rightHandSign := self.pop()
+	leftHandSign := self.pop()
+
+	if leftHandSign.Type() == object.INTEGER_OBJ && rightHandSign.Type() == object.INTEGER_OBJ {
+		return self.executeIntegerComparison(op, leftHandSign, rightHandSign)
+	}
+
+	switch op {
+	case code.OpEqual:
+		return self.push(nativeBoolToBooleanObject(leftHandSign == rightHandSign))
+	case code.OpNotEqual:
+		return self.push(nativeBoolToBooleanObject(leftHandSign != rightHandSign))
+	default:
+		return fmt.Errorf("unknown operator: %d (%s %s)", op, leftHandSign.Type(), rightHandSign.Type())
+	}
+}
+
+func (self *VM) executeIntegerComparison(op code.Opcode, leftHandSign object.Object, rightHandSign object.Object) error {
+	leftValue := leftHandSign.(*object.Integer).Value
+	rightValue := rightHandSign.(*object.Integer).Value
+
+	switch op {
+	case code.OpEqual:
+		return self.push(nativeBoolToBooleanObject(leftValue == rightValue))
+	case code.OpNotEqual:
+		return self.push(nativeBoolToBooleanObject(leftValue != rightValue))
+	case code.OpGreaterThan:
+		return self.push(nativeBoolToBooleanObject(leftValue > rightValue))
+	default:
+		return fmt.Errorf("unkown op: %d", op)
+
+	}
+}
+
+func nativeBoolToBooleanObject(input bool) *object.Boolean {
+	if input {
+		return True
+	} else {
+		return False
+	}
 }
