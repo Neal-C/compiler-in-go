@@ -84,6 +84,22 @@ func (self *VM) Run() error {
 				return err
 			}
 
+		case code.OpBang:
+
+			err := self.executeBangOperator()
+
+			if err != nil {
+				return err
+			}
+
+		case code.OpMinus:
+
+			err := self.executeMinusOperator()
+
+			if err != nil {
+				return err
+			}
+
 		case code.OpPop:
 			self.pop()
 		}
@@ -191,4 +207,29 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	} else {
 		return False
 	}
+}
+
+func (self *VM) executeBangOperator() error {
+	operandee := self.pop()
+
+	switch operandee {
+	case True:
+		return self.push(False)
+	case False:
+		return self.push(True)
+	default:
+		return self.push(False)
+	}
+}
+
+func (self *VM) executeMinusOperator() error {
+	operandee := self.pop()
+
+	if operandee.Type() != object.INTEGER_OBJ {
+		return fmt.Errorf("unsupported type for negation: %s", operandee.Type())
+	}
+
+	value := operandee.(*object.Integer).Value
+
+	return self.push(&object.Integer{Value: -value})
 }
