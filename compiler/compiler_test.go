@@ -269,3 +269,38 @@ func TestBooleanExpressions(t *testing.T) {
 
 	runCompilerTests(t, testTable)
 }
+
+func TestConditionals(t *testing.T) {
+
+	// What we care about are the jump instructions the compiler emits and
+	// that they have correct operands.
+
+	testTable := []CompilerTestCase{
+		{
+			input: `if (true) { 10 }; 3333;`,
+			// expected constants, in the constants pool/ data section / static
+			expectedConstants: []any{10, 3333},
+			expectedInstructions: []code.Instructions{
+				// 0000
+				// we're sitting on 0000
+				code.Make(code.OpTrue),
+				// 0001
+				// size of his operands is 2, so that takes 0002 0003, so we go to 0004
+				code.Make(code.OpJumpNotTruthy, 7),
+				// 0004
+				// we're sitting on 0004
+				// size of his operands is 2, so that takes 0005 and 0006
+				code.Make(code.OpConstant, 0),
+				// 0007
+				// no operands
+				code.Make(code.OpPop),
+				// 0008
+				code.Make(code.OpConstant, 1),
+				// 0011
+				code.Make(code.OpPop),
+			},
+		},
+	}
+
+	runCompilerTests(t, testTable)
+}
