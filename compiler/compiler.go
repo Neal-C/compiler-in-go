@@ -135,14 +135,21 @@ func (self *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
-		// FIXME: yep, the book says to put a bogus value here and we'll fix it later chapters
-		self.emit(code.OpJumpNotTruthy, 9999)
+		// Emit with a bogus value that gets back-patched later
+		jumpNotTruthyPosition := self.emit(code.OpJumpNotTruthy, 9999)
 
 		err = self.Compile(node.Consequence)
 
 		if err != nil {
 			return err
 		}
+
+		if self.lastInstructionIsPop() {
+			self.removeLastPop()
+		}
+
+		afterConsequencePos := len(self.instructions)
+		self.changeOperand(jumpNotTruthyPosition, afterConsequencePos)
 
 	case *ast.BlockStatement:
 
@@ -195,4 +202,31 @@ func (self *Compiler) setLastInstruction(op code.Opcode, position int) {
 
 	self.previousInstruction = previous
 	self.lastInstruction = last
+}
+
+func (self *Compiler) lastInstructionIsPop() bool {
+	return self.lastInstruction.OpCode == code.OpPop
+}
+
+func (self *Compiler) removeLastPop() {
+
+	self.instructions = self.instructions[:self.lastInstruction.Position]
+
+	self.lastInstruction = self.previousInstruction
+}
+
+func (self *Compiler) replaceInstruction(pos int, newInstruction []byte) {
+	for index := 0; index < len(newInstruction); index++ {
+		self.instructions[pos+index] = newInstruction[index]
+	}
+}
+
+func (self *Compiler) changeOperand(operationPosition int, operand int) {
+
+	// operationPosition is where we were
+	op := code.Opcode(self.instructions[operationPosition])
+	// operand is 2 bytes
+	newInstruction := code.Make(op, operand)
+
+	self.replaceInstruction(operationPosition, newInstruction)
 }
