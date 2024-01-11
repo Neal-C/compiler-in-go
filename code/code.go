@@ -33,7 +33,7 @@ const (
 
 type Definition struct {
 	Name          string
-	OperandsWidth []int
+	OperandsWidth []int // number of bytes (1 x 8, 2 x 8, ...)
 }
 
 var definitions = map[Opcode]*Definition{
