@@ -112,6 +112,24 @@ func (self *Compiler) Compile(node ast.Node) error {
 		default:
 			return fmt.Errorf("unkknown operator: %s", node.Operator)
 		}
+
+	case *ast.IfExpression:
+
+		err := self.Compile(node.Condition)
+
+		if err != nil {
+			return err
+		}
+
+		// FIXME: yep, the book says to put a bogus value here and we'll fix it later chapters
+		self.emit(code.OpJumpNotTruthy, 9999)
+
+		err = self.Compile(node.Consequence)
+
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil
