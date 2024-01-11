@@ -19,6 +19,11 @@ type EmittedInstruction struct {
 	Position int
 }
 
+type ByteCode struct {
+	Instructions code.Instructions
+	Constants    []object.Object
+}
+
 func New() *Compiler {
 	return &Compiler{
 		instructions:        code.Instructions{},
@@ -178,10 +183,16 @@ func (self *Compiler) emit(op code.Opcode, operands ...int) int {
 	instruction := code.Make(op, operands...)
 	position := self.addInstruction(instruction)
 
+	self.setLastInstruction(op, position)
+
 	return position
 }
 
-type ByteCode struct {
-	Instructions code.Instructions
-	Constants    []object.Object
+func (self *Compiler) setLastInstruction(op code.Opcode, position int) {
+
+	previous := self.lastInstruction
+	last := EmittedInstruction{OpCode: op, Position: position}
+
+	self.previousInstruction = previous
+	self.lastInstruction = last
 }
