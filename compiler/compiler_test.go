@@ -129,7 +129,7 @@ func testInstructions(expectedInstructions []code.Instructions, actualInstructio
 
 	for index, instruction := range concatted {
 		if actualInstructions[index] != instruction {
-			return fmt.Errorf("wrong instruction at position %d.\nwant = %q\n got= %q", index, concatted, actualInstructions[index])
+			return fmt.Errorf("wrong instruction at position %d.\nwant = %q\n got= %q", index, concatted, actualInstructions)
 		}
 	}
 
