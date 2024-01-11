@@ -130,6 +130,15 @@ func (self *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
+	case *ast.BlockStatement:
+
+		for _, stmt := range node.Statements {
+			err := self.Compile(stmt)
+
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
