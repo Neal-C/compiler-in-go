@@ -100,6 +100,21 @@ func (self *VM) Run() error {
 				return err
 			}
 
+		case code.OpJump:
+
+			position := int(code.ReadUint16(self.instructions[indexPointer+1:]))
+			indexPointer = position - 1
+		case code.OpJumpNotTruthy:
+
+			position := int(code.ReadUint16(self.instructions[indexPointer+1:]))
+			indexPointer += 2
+
+			condition := self.pop()
+
+			if !isTruthy(condition) {
+				indexPointer = position - 1
+			}
+
 		case code.OpPop:
 			self.pop()
 		}
@@ -232,4 +247,14 @@ func (self *VM) executeMinusOperator() error {
 	value := operandee.(*object.Integer).Value
 
 	return self.push(&object.Integer{Value: -value})
+}
+
+func isTruthy(obj object.Object) bool {
+	switch obj := obj.(type) {
+	case *object.Boolean:
+		return obj.Value
+
+	default:
+		return true
+	}
 }
