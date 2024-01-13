@@ -148,16 +148,14 @@ func (self *Compiler) Compile(node ast.Node) error {
 			self.removeLastPop()
 		}
 
+		jumpOverAlternativePosition := self.emit(code.OpJump, 9999)
+
+		afterConsequencePos := len(self.instructions)
+		self.changeOperand(jumpNotTruthyPosition, afterConsequencePos)
+
 		if node.Alternative == nil {
-
-			afterConsequencePos := len(self.instructions)
-			self.changeOperand(jumpNotTruthyPosition, afterConsequencePos)
-
+			self.emit(code.OpNull)
 		} else {
-			// emit with a bogus value that gets back-patched later
-			jumpPosition := self.emit(code.OpJump, 9999)
-			afterConsequencePos := len(self.instructions)
-			self.changeOperand(jumpNotTruthyPosition, afterConsequencePos)
 
 			err = self.Compile(node.Alternative)
 
@@ -168,10 +166,10 @@ func (self *Compiler) Compile(node ast.Node) error {
 			if self.lastInstructionIsPop() {
 				self.removeLastPop()
 			}
-
-			afterAlternativePosition := len(self.instructions)
-			self.changeOperand(jumpPosition, afterAlternativePosition)
 		}
+
+		afterAlternativePosition := len(self.instructions)
+		self.changeOperand(jumpOverAlternativePosition, afterAlternativePosition)
 
 	case *ast.BlockStatement:
 
