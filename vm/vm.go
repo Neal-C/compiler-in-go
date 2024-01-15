@@ -116,6 +116,13 @@ func (self *VM) Run() error {
 				indexPointer = position - 1
 			}
 
+		case code.OpNull:
+
+			err := self.push(Null)
+
+			if err != nil {
+				return err
+			}
 		case code.OpPop:
 			self.pop()
 		}
