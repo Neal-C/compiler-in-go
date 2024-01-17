@@ -366,8 +366,8 @@ func TestGlobalLetStatemets(t *testing.T) {
 		{
 			input: `
 				let one = 1;
-				let two = 2;
-				one;
+				let two = one;
+				two;
 				`,
 			expectedConstants: []any{1, 2},
 			expectedInstructions: []code.Instructions{
@@ -376,7 +376,7 @@ func TestGlobalLetStatemets(t *testing.T) {
 				// 0003
 				code.Make(code.OpSetGlobal, 0),
 				// 0006
-				code.Make(code.OpConstant, 1),
+				code.Make(code.OpConstant, 0),
 				// 0009
 				code.Make(code.OpSetGlobal, 1),
 				// 0012
