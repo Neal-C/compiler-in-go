@@ -369,14 +369,14 @@ func TestGlobalLetStatemets(t *testing.T) {
 				let two = one;
 				two;
 				`,
-			expectedConstants: []any{1, 2},
+			expectedConstants: []any{1},
 			expectedInstructions: []code.Instructions{
 				// 0000
 				code.Make(code.OpConstant, 0),
 				// 0003
 				code.Make(code.OpSetGlobal, 0),
 				// 0006
-				code.Make(code.OpConstant, 0),
+				code.Make(code.OpGetGlobal, 0),
 				// 0009
 				code.Make(code.OpSetGlobal, 1),
 				// 0012

@@ -192,7 +192,16 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 		symbol := self.symbolTable.Define(node.Name.Value)
 		self.emit(code.OpSetGlobal, symbol.Index)
+	case *ast.Identifier:
 
+		symbol, ok := self.symbolTable.Resolve(node.Value)
+
+		if !ok {
+			// Compile time errors !!
+			return fmt.Errorf("undefined variable : %s", node.Value)
+		}
+
+		self.emit(code.OpGetGlobal, symbol.Index)
 	}
 
 	return nil
