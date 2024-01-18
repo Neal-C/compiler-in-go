@@ -15,7 +15,7 @@ var False = &object.Boolean{Value: false}
 var Null = &object.Null{}
 
 type VM struct {
-	constants    []object.Object
+	Constants    []object.Object
 	instructions code.Instructions
 	stack        []object.Object
 	stackPointer int // stackPointer always points to the next value, top of stack is (stackPointer - 1)
@@ -24,7 +24,7 @@ type VM struct {
 
 func New(bytecode *compiler.ByteCode) *VM {
 	return &VM{
-		constants:    bytecode.Constants,
+		Constants:    bytecode.Constants,
 		instructions: bytecode.Instructions,
 		stack:        make([]object.Object, StackSize),
 		stackPointer: 0,
@@ -61,7 +61,7 @@ func (self *VM) Run() error {
 			// increment indexPointer by the bytes size (16 = 2 x bytes )
 			indexPointer += 2
 
-			err := self.push(self.constants[constIndex])
+			err := self.push(self.Constants[constIndex])
 
 			if err != nil {
 				return err
