@@ -32,6 +32,12 @@ func New(bytecode *compiler.ByteCode) *VM {
 	}
 }
 
+func NewWithGlobalStore(bytecode *compiler.ByteCode, globals []object.Object) *VM {
+	vm := New(bytecode)
+	vm.globals = globals
+	return vm
+}
+
 func (self *VM) StackTop() object.Object {
 	if self.stackPointer == 0 {
 		return nil
