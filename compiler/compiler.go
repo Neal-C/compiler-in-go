@@ -189,6 +189,10 @@ func (self *Compiler) Compile(node ast.Node) error {
 		if err != nil {
 			return err
 		}
+
+		symbol := self.symbolTable.Define(node.Name.Value)
+		self.emit(code.OpSetGlobal, symbol.Index)
+
 	}
 
 	return nil
