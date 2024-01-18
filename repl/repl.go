@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Neal-C/compiler-in-go/compiler"
 	"github.com/Neal-C/compiler-in-go/lexer"
+	"github.com/Neal-C/compiler-in-go/object"
 	"github.com/Neal-C/compiler-in-go/parser"
 	"github.com/Neal-C/compiler-in-go/vm"
 	"io"
@@ -14,6 +15,10 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+
+	constants := []object.Object{}
+	globals := make([]object.Object, vm.GlobalSize)
+	symbolTable := compiler.NewSymbolTable()
 
 	for {
 		fmt.Printf(PROMPT)
@@ -32,7 +37,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		myCompiler := compiler.New()
+		myCompiler := compiler.NewWithState(symbolTable, constants)
 		err := myCompiler.Compile(program)
 
 		if err != nil {
@@ -40,7 +45,11 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		machine := vm.New(myCompiler.ByteCode())
+		code := myCompiler.ByteCode()
+
+		constants = code.Constants
+
+		machine := vm.NewWithGlobalStore(code, globals)
 
 		err = machine.Run()
 
