@@ -126,6 +126,13 @@ func (self *VM) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpSetGlobal:
+
+			globalIndex := code.ReadUint16(self.instructions[indexPointer+1:])
+
+			indexPointer += 2
+
+			self.globals[globalIndex] = self.pop()
 		case code.OpPop:
 			self.pop()
 		}
