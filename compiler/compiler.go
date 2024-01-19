@@ -215,6 +215,18 @@ func (self *Compiler) Compile(node ast.Node) error {
 		constantPoolIndex := self.addConstants(str)
 
 		self.emit(code.OpConstant, constantPoolIndex)
+
+	case *ast.ArrayLiteral:
+
+		for _, element := range node.Elements {
+			err := self.Compile(element)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		self.emit(code.OpArray, len(node.Elements))
 	}
 
 	return nil
