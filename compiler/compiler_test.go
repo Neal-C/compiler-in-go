@@ -146,18 +146,25 @@ func concatInstructions(instructions []code.Instructions) code.Instructions {
 	return out
 }
 
-func testConstants(expected []any, actual []object.Object) error {
-	if len(expected) != len(actual) {
-		return fmt.Errorf("wrong number of constants. got = %d , want = %d", len(actual), len(expected))
+func testConstants(expectedConstants []any, actualObjects []object.Object) error {
+	if len(expectedConstants) != len(actualObjects) {
+		return fmt.Errorf("wrong number of constants. got = %d , want = %d", len(actualObjects), len(expectedConstants))
 	}
 
-	for index, constant := range expected {
+	for index, constant := range expectedConstants {
 		switch constant := constant.(type) {
 		case int:
-			err := testIntegerObject(int64(constant), actual[index])
+			err := testIntegerObject(int64(constant), actualObjects[index])
 
 			if err != nil {
 				return fmt.Errorf("constant %d - testIntegerObject failed : %s ", index, err)
+			}
+
+		case string:
+			err := testStringObject(constant, actualObjects[index])
+
+			if err != nil {
+				return fmt.Errorf("constant %d - testStringObject failed: %s", index, err)
 			}
 		}
 	}
