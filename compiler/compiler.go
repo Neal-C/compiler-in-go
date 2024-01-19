@@ -209,6 +209,12 @@ func (self *Compiler) Compile(node ast.Node) error {
 		}
 
 		self.emit(code.OpGetGlobal, symbol.Index)
+	case *ast.StringLiteral:
+		str := &object.String{Value: node.Value}
+
+		constantPoolIndex := self.addConstants(str)
+
+		self.emit(code.OpConstant, constantPoolIndex)
 	}
 
 	return nil
