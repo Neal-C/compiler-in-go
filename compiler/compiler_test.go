@@ -389,3 +389,28 @@ func TestGlobalLetStatemets(t *testing.T) {
 
 	runCompilerTests(t, testTable)
 }
+
+func TestStringExpressions(t *testing.T) {
+	testTable := []CompilerTestCase{
+		{
+			input:             "monkey",
+			expectedConstants: []any{"monkey"},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			input:             `"mon" +  "key"`,
+			expectedConstants: []any{"mon", "key"},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpConstant, 1),
+				code.Make(code.OpAdd),
+				code.Make(code.OpPop),
+			},
+		},
+	}
+
+	runCompilerTests(t, testTable)
+}
