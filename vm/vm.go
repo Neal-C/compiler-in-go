@@ -154,6 +154,22 @@ func (self *VM) Run() error {
 				return err
 			}
 
+		case code.OpArray:
+
+			numberOfElements := int(code.ReadUint16(self.instructions[indexPointer+1:]))
+
+			indexPointer += 2
+
+			array := self.buildArray(self.stackPointer-numberOfElements, self.stackPointer)
+
+			self.stackPointer = self.stackPointer - numberOfElements
+
+			err := self.push(array)
+
+			if err != nil {
+				return err
+			}
+
 		case code.OpPop:
 			self.pop()
 		}
@@ -315,4 +331,14 @@ func (self *VM) executeBinaryStringOperation(op code.Opcode, left object.Object,
 	rightValue := right.(*object.String).Value
 
 	return self.push(&object.String{Value: leftValue + rightValue})
+}
+
+func (self *VM) buildArray(startIndex int, endIndex int) object.Object {
+
+	elements := make([]object.Object, endIndex-startIndex)
+
+	for i := startIndex; i < endIndex; i++ {
+		elements[i-startIndex] = self.stack[i]
+	}
+	return &object.Array{Elements: elements}
 }
