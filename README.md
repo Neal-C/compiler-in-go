@@ -8,10 +8,9 @@
 # Work in progress (_book is 278 pages..._)
  
 ###  Learned and done :
-- Define OpCodes
-- Define bytecode
-- Made a Stack machine
-- Made a Symbol table
+- Defined OpCodes
+- Built bytecode
+- Made a Stack machine with a symbol table
 - Written a compiler
 - Written a Virtual Machine
 
