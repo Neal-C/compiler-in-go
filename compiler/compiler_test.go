@@ -515,6 +515,7 @@ func TestHashLiterals(t *testing.T) {
 				code.Make(code.OpConstant, 5),
 				code.Make(code.OpMul),
 				code.Make(code.OpHash, 4),
+				code.Make(code.OpPop),
 			},
 		},
 	}
