@@ -116,6 +116,33 @@ func testExpectedObject(t *testing.T, expected any, actual object.Object) {
 				t.Errorf("testIntegerObject failed : %s", err)
 			}
 		}
+
+	case map[object.HashKey]int64:
+		hash, ok := actual.(*object.Hash)
+
+		if !ok {
+			t.Errorf("object is not a Hash. got = %T (%+v)", actual, actual)
+			return
+		}
+
+		if len(hash.Pairs) != len(expected) {
+			t.Errorf("hash has wrong number of pairs. want = %d , got = %d", len(expected), len(hash.Pairs))
+			return
+		}
+
+		for expectedKey, expectedValue := range expected {
+			pair, ok := hash.Pairs[expectedKey]
+
+			if !ok {
+				t.Errorf("no pair for given key in Pairs")
+			}
+
+			err := testIntegerObject(expectedValue, pair.Value)
+
+			if err != nil {
+				t.Errorf("testIntegerObject failed : %s", err)
+			}
+		}
 	}
 
 }
