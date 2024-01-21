@@ -5,6 +5,7 @@ import (
 	"github.com/Neal-C/compiler-in-go/ast"
 	"github.com/Neal-C/compiler-in-go/code"
 	"github.com/Neal-C/compiler-in-go/object"
+	"sort"
 )
 
 type Compiler struct {
@@ -227,6 +228,34 @@ func (self *Compiler) Compile(node ast.Node) error {
 		}
 
 		self.emit(code.OpArray, len(node.Elements))
+
+	case *ast.HashLiteral:
+		var keys []ast.Expression
+
+		for key := range node.Pairs {
+			keys = append(keys, key)
+		}
+
+		sort.Slice(keys, func(i int, j int) bool {
+			return keys[i].String() < keys[j].String()
+		})
+
+		for _, k := range keys {
+
+			err := self.Compile(k)
+
+			if err != nil {
+				return err
+			}
+
+			err = self.Compile(node.Pairs[k])
+
+			if err != nil {
+				return err
+			}
+		}
+
+		self.emit(code.OpHash, len(node.Pairs)*2)
 	}
 
 	return nil
