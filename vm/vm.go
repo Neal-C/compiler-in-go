@@ -170,6 +170,26 @@ func (self *VM) Run() error {
 				return err
 			}
 
+		case code.OpHash:
+
+			numberOfElements := int(code.ReadUint16(self.instructions[indexPointer+1:]))
+
+			indexPointer += 2
+
+			hash, err := self.buildHash(self.stackPointer-numberOfElements, self.stackPointer)
+
+			if err != nil {
+				return err
+			}
+
+			self.stackPointer = self.stackPointer - numberOfElements
+
+			err = self.push(hash)
+
+			if err != nil {
+				return err
+			}
+
 		case code.OpPop:
 			self.pop()
 		}
@@ -341,4 +361,27 @@ func (self *VM) buildArray(startIndex int, endIndex int) object.Object {
 		elements[i-startIndex] = self.stack[i]
 	}
 	return &object.Array{Elements: elements}
+}
+
+func (self *VM) buildHash(startIndex int, endIndex int) (object.Object, error) {
+
+	hashedPairs := make(map[object.HashKey]object.HashPair)
+
+	for i := startIndex; i < endIndex; i += 2 {
+		key := self.stack[i]
+		value := self.stack[i+1]
+
+		pair := object.HashPair{Key: key, Value: value}
+
+		hashkey, ok := key.(object.Hashable)
+
+		if !ok {
+			return nil, fmt.Errorf("unusable as a hash key: %s", key.Type())
+		}
+
+		hashedPairs[hashkey.HashKey()] = pair
+	}
+
+	return &object.Hash{Pairs: hashedPairs}, nil
+
 }
