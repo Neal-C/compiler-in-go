@@ -558,3 +558,26 @@ func TestIndexExpressions(t *testing.T) {
 
 	runCompilerTests(t, testTable)
 }
+
+func TestFunctions(t *testing.T) {
+	testTable := []CompilerTestCase{
+		{
+			input: `fn() { return 5 + 10 }`,
+			expectedConstants: []any{
+				5,
+				10,
+				[]code.Instructions{
+					code.Make(code.OpConstant, 0),
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpAdd),
+					code.Make(code.OpReturnValue),
+				},
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpPop),
+			},
+		},
+	}
+	runCompilerTests(t, testTable)
+}
