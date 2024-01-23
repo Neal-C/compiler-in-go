@@ -14,6 +14,8 @@ type Compiler struct {
 	lastInstruction     EmittedInstruction
 	previousInstruction EmittedInstruction
 	symbolTable         *SymbolTable
+	scopes              []CompilationScope
+	scopeIndex          int
 }
 
 type EmittedInstruction struct {
@@ -24,6 +26,12 @@ type EmittedInstruction struct {
 type ByteCode struct {
 	Instructions code.Instructions
 	Constants    []object.Object
+}
+
+type CompilationScope struct {
+	instructions        code.Instructions
+	lastInstruction     EmittedInstruction
+	previousInstruction EmittedInstruction
 }
 
 func New() *Compiler {
