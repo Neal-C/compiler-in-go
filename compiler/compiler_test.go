@@ -166,6 +166,18 @@ func testConstants(expectedConstants []any, actualObjects []object.Object) error
 			if err != nil {
 				return fmt.Errorf("constant %d - testStringObject failed: %s", index, err)
 			}
+
+		case []code.Instructions:
+			fn, ok := actualObjects[index].(*object.CompiledFunction)
+			if !ok {
+				return fmt.Errorf("constant %d - not a function: %T",
+					index, actualObjects[index])
+			}
+			err := testInstructions(constant, fn.Instructions)
+			if err != nil {
+				return fmt.Errorf("constant %d - testInstructions failed: %s",
+					index, err)
+			}
 		}
 	}
 
