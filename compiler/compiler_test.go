@@ -642,7 +642,7 @@ func TestCompilerScopes(t *testing.T) {
 	previousInstruction := myCompiler.scopes[myCompiler.scopeIndex].previousInstruction
 
 	if previousInstruction.OpCode != code.OpMul {
-		t.Errorf("lastInstruction.Opcode wrong. got=%d, want=%d", lastInstruction.OpCode, code.OpMul)
+		t.Errorf("previousInstruction.Opcode wrong. got=%d, want=%d", previousInstruction.OpCode, code.OpMul)
 
 	}
 
