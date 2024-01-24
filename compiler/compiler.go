@@ -294,7 +294,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 func (self *Compiler) ByteCode() *ByteCode {
 	return &ByteCode{
-		Instructions: self.instructions,
+		Instructions: self.currentInstructions(),
 		Constants:    self.constants,
 	}
 }
