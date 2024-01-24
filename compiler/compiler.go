@@ -326,7 +326,7 @@ func (self *Compiler) emit(op code.Opcode, operands ...int) int {
 
 func (self *Compiler) setLastInstruction(op code.Opcode, position int) {
 
-	previous := self.scopes[self.scopeIndex].previousInstruction
+	previous := self.scopes[self.scopeIndex].lastInstruction
 	last := EmittedInstruction{OpCode: op, Position: position}
 
 	self.scopes[self.scopeIndex].previousInstruction = previous
