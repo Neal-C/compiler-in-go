@@ -54,6 +54,10 @@ func NewWithState(symbolTable *SymbolTable, constants []object.Object) *Compiler
 	return compiler
 }
 
+func (self *Compiler) currentInstructions() code.Instructions {
+	return self.scopes[self.scopeIndex].instructions
+}
+
 func (self *Compiler) Compile(node ast.Node) error {
 
 	switch node := node.(type) {
