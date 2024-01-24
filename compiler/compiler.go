@@ -306,8 +306,10 @@ func (self *Compiler) addConstants(obj object.Object) int {
 }
 
 func (self *Compiler) addInstruction(instructions code.Instructions) int {
-	posNewInstruction := len(self.instructions)
-	self.instructions = append(self.instructions, instructions...)
+	posNewInstruction := len(self.currentInstructions())
+	updatedInstructions := append(self.currentInstructions(), instructions...)
+
+	self.scopes[self.scopeIndex].instructions = updatedInstructions
 
 	return posNewInstruction
 }
