@@ -175,7 +175,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 		jumpOverAlternativePosition := self.emit(code.OpJump, 9999)
 
-		afterConsequencePos := len(self.instructions)
+		afterConsequencePos := len(self.currentInstructions())
 		self.changeOperand(jumpNotTruthyPosition, afterConsequencePos)
 
 		if node.Alternative == nil {
@@ -193,7 +193,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 			}
 		}
 
-		afterAlternativePosition := len(self.instructions)
+		afterAlternativePosition := len(self.currentInstructions())
 		self.changeOperand(jumpOverAlternativePosition, afterAlternativePosition)
 
 	case *ast.BlockStatement:
