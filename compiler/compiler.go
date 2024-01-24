@@ -326,34 +326,45 @@ func (self *Compiler) emit(op code.Opcode, operands ...int) int {
 
 func (self *Compiler) setLastInstruction(op code.Opcode, position int) {
 
-	previous := self.lastInstruction
+	previous := self.scopes[self.scopeIndex].previousInstruction
 	last := EmittedInstruction{OpCode: op, Position: position}
 
-	self.previousInstruction = previous
-	self.lastInstruction = last
+	self.scopes[self.scopeIndex].previousInstruction = previous
+	self.scopes[self.scopeIndex].lastInstruction = last
 }
 
 func (self *Compiler) lastInstructionIsPop() bool {
-	return self.lastInstruction.OpCode == code.OpPop
+	return self.scopes[self.scopeIndex].lastInstruction.OpCode == code.OpPop
 }
 
 func (self *Compiler) removeLastPop() {
 
-	self.instructions = self.instructions[:self.lastInstruction.Position]
+	last := self.scopes[self.scopeIndex].lastInstruction
+	previous := self.scopes[self.scopeIndex].previousInstruction
 
-	self.lastInstruction = self.previousInstruction
+	oldInstructions := self.currentInstructions()
+	newInstructions := oldInstructions[:last.Position]
+
+	self.scopes[self.scopeIndex].instructions = newInstructions
+	self.scopes[self.scopeIndex].lastInstruction = previous
+
 }
 
 func (self *Compiler) replaceInstruction(pos int, newInstruction []byte) {
+
+	instructions := self.currentInstructions()
+
 	for index := 0; index < len(newInstruction); index++ {
-		self.instructions[pos+index] = newInstruction[index]
+		instructions[pos+index] = newInstruction[index]
 	}
 }
 
 func (self *Compiler) changeOperand(operationPosition int, operand int) {
 
+	instructions := self.currentInstructions()
+
 	// operationPosition is where we were
-	op := code.Opcode(self.instructions[operationPosition])
+	op := code.Opcode(instructions[operationPosition])
 	// operand is 2 bytes
 	newInstruction := code.Make(op, operand)
 
