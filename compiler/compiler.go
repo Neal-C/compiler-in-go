@@ -370,3 +370,23 @@ func (self *Compiler) changeOperand(operationPosition int, operand int) {
 
 	self.replaceInstruction(operationPosition, newInstruction)
 }
+
+func (self *Compiler) enterScope() {
+	scope := CompilationScope{
+		instructions:        code.Instructions{},
+		lastInstruction:     EmittedInstruction{},
+		previousInstruction: EmittedInstruction{},
+	}
+
+	self.scopes = append(self.scopes, scope)
+	self.scopeIndex++
+}
+
+func (self *Compiler) leaveScope() code.Instructions {
+	instructions := self.currentInstructions()
+
+	self.scopes = self.scopes[:len(self.scopes)-1]
+	self.scopeIndex--
+
+	return instructions
+}
