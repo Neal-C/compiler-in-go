@@ -712,7 +712,7 @@ func TestFunctionsCalls(t *testing.T) {
 				},
 			},
 			expectedInstructions: []code.Instructions{
-				code.Make(code.OpConstant, 0), // the compiled Fn
+				code.Make(code.OpConstant, 1), // the compiled Fn
 				code.Make(code.OpCall),
 				code.Make(code.OpPop),
 			},
@@ -724,12 +724,12 @@ func TestFunctionsCalls(t *testing.T) {
 			expectedConstants: []any{
 				24,
 				[]code.Instructions{
-					code.Make(code.OpConstant), // the literal 24
+					code.Make(code.OpConstant, 0), // the literal 24
 					code.Make(code.OpReturnValue),
 				},
 			},
 			expectedInstructions: []code.Instructions{
-				code.Make(code.OpConstant, 0), // the compiled Fn
+				code.Make(code.OpConstant, 1), // the compiled Fn
 				code.Make(code.OpSetGlobal, 0),
 				code.Make(code.OpGetGlobal, 0),
 				code.Make(code.OpCall),
