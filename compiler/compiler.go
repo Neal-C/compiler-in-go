@@ -169,7 +169,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
-		if self.lastInstructionIsPop() {
+		if self.lastInstructionIs(code.OpPop) {
 			self.removeLastPop()
 		}
 
@@ -188,7 +188,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 				return err
 			}
 
-			if self.lastInstructionIsPop() {
+			if self.lastInstructionIs(code.OpPop) {
 				self.removeLastPop()
 			}
 		}
@@ -359,8 +359,12 @@ func (self *Compiler) setLastInstruction(op code.Opcode, position int) {
 	self.scopes[self.scopeIndex].lastInstruction = last
 }
 
-func (self *Compiler) lastInstructionIsPop() bool {
-	return self.scopes[self.scopeIndex].lastInstruction.OpCode == code.OpPop
+func (self *Compiler) lastInstructionIs(op code.Opcode) bool {
+
+	if len(self.currentInstructions()) == 0 {
+		return false
+	}
+	return self.scopes[self.scopeIndex].lastInstruction.OpCode == op
 }
 
 func (self *Compiler) removeLastPop() {
