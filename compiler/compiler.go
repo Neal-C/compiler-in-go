@@ -321,6 +321,16 @@ func (self *Compiler) Compile(node ast.Node) error {
 		}
 
 		self.emit(code.OpReturnValue)
+	case *ast.CallExpression:
+
+		err := self.Compile(node.Function)
+
+		if err != nil {
+			return err
+		}
+
+		self.emit(code.OpCall)
+
 	}
 
 	return nil
