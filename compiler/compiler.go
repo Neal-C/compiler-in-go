@@ -303,6 +303,16 @@ func (self *Compiler) Compile(node ast.Node) error {
 		compiledFn := &object.CompiledFunction{Instructions: instructions}
 
 		self.emit(code.OpConstant, self.addConstants(compiledFn))
+
+	case *ast.ReturnStatement:
+
+		err := self.Compile(node.ReturnValue)
+
+		if err != nil {
+			return err
+		}
+
+		self.emit(code.OpReturnValue)
 	}
 
 	return nil
