@@ -610,8 +610,8 @@ func TestFunctions(t *testing.T) {
 		{
 			input: `fn() { 1; 2 }`,
 			expectedConstants: []any{
-				5,
-				10,
+				1,
+				2,
 				[]code.Instructions{
 					code.Make(code.OpConstant, 0),
 					code.Make(code.OpPop),
