@@ -681,3 +681,21 @@ func TestCompilerScopes(t *testing.T) {
 	}
 
 }
+
+func TestFunctionsWithoutReturnValue(t *testing.T) {
+	testTable := []CompilerTestCase{
+		{
+			input: `fn() { }`,
+			expectedConstants: []any{
+				[]code.Instructions{
+					code.Make(code.OpReturn),
+				},
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpPop),
+			},
+		},
+	}
+	runCompilerTests(t, testTable)
+}
