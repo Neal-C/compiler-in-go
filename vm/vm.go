@@ -22,6 +22,22 @@ type VM struct {
 	globals      []object.Object
 }
 
+type Frame struct {
+	fn           *object.CompiledFunction
+	indexPointer int
+}
+
+func NewFrame(fn *object.CompiledFunction) *Frame {
+	return &Frame{
+		fn:           fn,
+		indexPointer: -1,
+	}
+}
+
+func (self *Frame) Instructions() code.Instructions {
+	return self.fn.Instructions
+}
+
 func New(bytecode *compiler.ByteCode) *VM {
 	return &VM{
 		constants:    bytecode.Constants,
