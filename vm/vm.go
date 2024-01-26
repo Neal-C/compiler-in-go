@@ -9,6 +9,7 @@ import (
 
 const StackSize = 2048
 const GlobalSize = 65536
+const MaxFrames = 1024
 
 var True = &object.Boolean{Value: true}
 var False = &object.Boolean{Value: false}
@@ -41,12 +42,21 @@ func (self *Frame) Instructions() code.Instructions {
 }
 
 func New(bytecode *compiler.ByteCode) *VM {
+
+	mainFn := &object.CompiledFunction{Instructions: bytecode.Instructions}
+	mainFrame := NewFrame(mainFn)
+
+	frames := make([]*Frame, MaxFrames)
+	frames[0] = mainFrame
+
 	return &VM{
 		constants:    bytecode.Constants,
 		instructions: bytecode.Instructions,
 		stack:        make([]object.Object, StackSize),
 		stackPointer: 0,
 		globals:      make([]object.Object, GlobalSize),
+		frames:       frames,
+		framesIndex:  1,
 	}
 }
 
