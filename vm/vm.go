@@ -17,7 +17,6 @@ var Null = &object.Null{}
 
 type VM struct {
 	constants    []object.Object
-	instructions code.Instructions
 	stack        []object.Object
 	stackPointer int // stackPointer always points to the next value, top of stack is (stackPointer - 1)
 	globals      []object.Object
@@ -51,7 +50,6 @@ func New(bytecode *compiler.ByteCode) *VM {
 
 	return &VM{
 		constants:    bytecode.Constants,
-		instructions: bytecode.Instructions,
 		stack:        make([]object.Object, StackSize),
 		stackPointer: 0,
 		globals:      make([]object.Object, GlobalSize),
