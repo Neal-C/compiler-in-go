@@ -394,3 +394,18 @@ func TestFunctionsWithoutReturnValue(t *testing.T) {
 
 	runVmTests(t, testTable)
 }
+
+func TestFirstClassCitizenFunctions(t *testing.T) {
+	testTable := []VmTestCase{
+		{
+			input: `
+				let returnsOne = fn() { 1; };
+				let returnsOneReturner = fn() { returnsOne; };
+				returnsOneReturner()();
+				`,
+			expected: 1,
+		},
+	}
+
+	runVmTests(t, testTable)
+}
