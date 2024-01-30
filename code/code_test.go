@@ -57,6 +57,7 @@ func TestReadOperands(t *testing.T) {
 		bytesRead int
 	}{
 		{OpConstant, []int{65_535}, 2},
+		{OpGetLocal, []int{255}, 1},
 	}
 
 	for _, tt := range tableTests {
