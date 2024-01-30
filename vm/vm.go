@@ -101,6 +101,11 @@ func (self *VM) Run() error {
 			if err != nil {
 				return err
 			}
+
+		case code.OpPop:
+
+			self.pop()
+
 		case code.OpAdd, code.OpSub, code.OpMul, code.OpDiv:
 			err := self.executeBinaryOperation(op)
 
@@ -234,8 +239,31 @@ func (self *VM) Run() error {
 			if err != nil {
 				return err
 			}
-		case code.OpPop:
+
+		case code.OpCall:
+
+			fn, ok := self.stack[self.stackPointer-1].(*object.CompiledFunction)
+
+			if !ok {
+				return fmt.Errorf("calling a non-function")
+			}
+
+			newFrame := NewFrame(fn)
+
+			self.pushFrame(newFrame)
+
+		case code.OpReturnValue:
+
+			returnValue := self.pop()
+
+			self.popFrame()
 			self.pop()
+
+			err := self.push(returnValue)
+
+			if err != nil {
+				return err
+			}
 		}
 	}
 
