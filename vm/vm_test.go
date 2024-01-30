@@ -350,3 +350,24 @@ func TestCallingFunctionsWithoutArguments(t *testing.T) {
 
 	runVmTests(t, testTable)
 }
+
+func TestFunctionsWithReturnStatements(t *testing.T) {
+	testTable := []VmTestCase{
+		{
+			input: `
+				let earlyExit = fn() { return 99; 100; };
+				earlyExit();
+				`,
+			expected: 99,
+		},
+		{
+			input: `
+				let earlyExit = fn() { return 99; return 100; };
+				earlyExit();
+				`,
+			expected: 99,
+		},
+	}
+
+	runVmTests(t, testTable)
+}
