@@ -74,18 +74,27 @@ func (self *VM) StackTop() object.Object {
 
 func (self *VM) Run() error {
 
-	for indexPointer := 0; indexPointer < len(self.instructions); indexPointer++ {
+	var indexPointer int
+	var instructions code.Instructions
+	var op code.Opcode
 
+	for self.currentFrame().indexPointer < len(self.currentFrame().Instructions())-1 {
+
+		self.currentFrame().indexPointer++
+
+		indexPointer = self.currentFrame().indexPointer
+
+		instructions = self.currentFrame().Instructions()
 		// type coercion
-		op := code.Opcode(self.instructions[indexPointer])
+		op = code.Opcode(instructions[indexPointer])
 
 		switch op {
 		case code.OpConstant:
 			operandIndex := indexPointer + 1
-			constIndex := code.ReadUint16(self.instructions[operandIndex:])
+			constIndex := code.ReadUint16(instructions[operandIndex:])
 
 			// increment indexPointer by the bytes size (16 = 2 x bytes )
-			indexPointer += 2
+			self.currentFrame().indexPointer += 2
 
 			err := self.push(self.constants[constIndex])
 
@@ -138,17 +147,17 @@ func (self *VM) Run() error {
 
 		case code.OpJump:
 
-			position := int(code.ReadUint16(self.instructions[indexPointer+1:]))
-			indexPointer = position - 1
+			position := int(code.ReadUint16(instructions[indexPointer+1:]))
+			self.currentFrame().indexPointer = position - 1
 		case code.OpJumpNotTruthy:
 
-			position := int(code.ReadUint16(self.instructions[indexPointer+1:]))
-			indexPointer += 2
+			position := int(code.ReadUint16(instructions[indexPointer+1:]))
+			self.currentFrame().indexPointer += 2
 
 			condition := self.pop()
 
 			if !isTruthy(condition) {
-				indexPointer = position - 1
+				self.currentFrame().indexPointer = position - 1
 			}
 
 		case code.OpNull:
@@ -160,17 +169,17 @@ func (self *VM) Run() error {
 			}
 		case code.OpSetGlobal:
 
-			globalIndex := code.ReadUint16(self.instructions[indexPointer+1:])
+			globalIndex := code.ReadUint16(instructions[indexPointer+1:])
 
-			indexPointer += 2
+			self.currentFrame().indexPointer += 2
 
 			self.globals[globalIndex] = self.pop()
 
 		case code.OpGetGlobal:
 
-			globalIndex := code.ReadUint16(self.instructions[indexPointer+1:])
+			globalIndex := code.ReadUint16(instructions[indexPointer+1:])
 
-			indexPointer += 2
+			self.currentFrame().indexPointer += 2
 
 			resolvedValue := self.globals[globalIndex]
 
@@ -182,9 +191,9 @@ func (self *VM) Run() error {
 
 		case code.OpArray:
 
-			numberOfElements := int(code.ReadUint16(self.instructions[indexPointer+1:]))
+			numberOfElements := int(code.ReadUint16(instructions[indexPointer+1:]))
 
-			indexPointer += 2
+			self.currentFrame().indexPointer += 2
 
 			array := self.buildArray(self.stackPointer-numberOfElements, self.stackPointer)
 
@@ -198,9 +207,9 @@ func (self *VM) Run() error {
 
 		case code.OpHash:
 
-			numberOfElements := int(code.ReadUint16(self.instructions[indexPointer+1:]))
+			numberOfElements := int(code.ReadUint16(instructions[indexPointer+1:]))
 
-			indexPointer += 2
+			self.currentFrame().indexPointer += 2
 
 			hash, err := self.buildHash(self.stackPointer-numberOfElements, self.stackPointer)
 
