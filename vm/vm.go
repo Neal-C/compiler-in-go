@@ -45,7 +45,7 @@ func (self *Frame) Instructions() code.Instructions {
 func New(bytecode *compiler.ByteCode) *VM {
 
 	mainFn := &object.CompiledFunction{Instructions: bytecode.Instructions}
-	mainFrame := NewFrame(mainFn)
+	mainFrame := NewFrame(mainFn, 0)
 
 	frames := make([]*Frame, MaxFrames)
 	frames[0] = mainFrame
@@ -250,7 +250,7 @@ func (self *VM) Run() error {
 				return fmt.Errorf("calling a non-function")
 			}
 
-			newFrame := NewFrame(fn)
+			newFrame := NewFrame(fn, self.stackPointer)
 
 			self.pushFrame(newFrame)
 
