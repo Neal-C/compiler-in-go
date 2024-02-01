@@ -189,7 +189,7 @@ func (self *Hash) Inspect() string {
 
 type CompiledFunction struct {
 	Instructions   code.Instructions
-	numberOfLocals int
+	NumberOfLocals int
 }
 
 func (self *CompiledFunction) Type() ObjectType {
