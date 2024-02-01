@@ -741,7 +741,7 @@ func TestFunctionsCalls(t *testing.T) {
 	runCompilerTests(t, testTable)
 }
 
-func TestLetStatements(t *testing.T) {
+func TestLetStatementsScopes(t *testing.T) {
 	testTable := []CompilerTestCase{
 		{
 			input: `
