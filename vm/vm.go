@@ -27,12 +27,14 @@ type VM struct {
 type Frame struct {
 	fn           *object.CompiledFunction
 	indexPointer int
+	basePointer  int
 }
 
-func NewFrame(fn *object.CompiledFunction) *Frame {
+func NewFrame(fn *object.CompiledFunction, basePointer int) *Frame {
 	return &Frame{
 		fn:           fn,
 		indexPointer: -1,
+		basePointer:  basePointer,
 	}
 }
 
