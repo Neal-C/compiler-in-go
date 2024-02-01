@@ -28,7 +28,13 @@ func NewSymbolTable() *SymbolTable {
 
 func (self *SymbolTable) Define(name string) Symbol {
 
-	symbol := Symbol{Name: name, Index: self.numberOfDefinitions, Scope: GlobalScope}
+	symbol := Symbol{Name: name, Index: self.numberOfDefinitions}
+
+	if self.OuterTable == nil {
+		symbol.Scope = GlobalScope
+	} else {
+		symbol.Scope = LocalScope
+	}
 
 	self.store[name] = symbol
 
@@ -40,10 +46,15 @@ func (self *SymbolTable) Define(name string) Symbol {
 func (self *SymbolTable) Resolve(name string) (Symbol, bool) {
 	symbol, ok := self.store[name]
 
+	if !ok && self.OuterTable != nil {
+		symbol, ok := self.OuterTable.Resolve(name)
+		return symbol, ok
+	}
+
 	return symbol, ok
 }
 
-func NewEnclosedTable(outer *SymbolTable) *SymbolTable {
+func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
 	symbolTable := NewSymbolTable()
 
 	symbolTable.OuterTable = outer
