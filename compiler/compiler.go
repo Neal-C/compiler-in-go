@@ -319,7 +319,12 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 		instructions := self.leaveScope()
 
-		compiledFn := &object.CompiledFunction{Instructions: instructions}
+		numberOfLocals := self.symbolTable.numberOfDefinitions
+
+		compiledFn := &object.CompiledFunction{
+			Instructions:   instructions,
+			NumberOfLocals: numberOfLocals,
+		}
 
 		self.emit(code.OpConstant, self.addConstants(compiledFn))
 
