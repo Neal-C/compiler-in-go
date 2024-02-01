@@ -4,6 +4,7 @@ type SymbolScope string
 
 const (
 	GlobalScope = "GLOBAL"
+	LocalScope  = "LOCAL"
 )
 
 type Symbol struct {
@@ -13,6 +14,8 @@ type Symbol struct {
 }
 
 type SymbolTable struct {
+	OuterTable *SymbolTable
+
 	store               map[string]Symbol
 	numberOfDefinitions int
 }
@@ -38,4 +41,13 @@ func (self *SymbolTable) Resolve(name string) (Symbol, bool) {
 	symbol, ok := self.store[name]
 
 	return symbol, ok
+}
+
+func NewEnclosedTable(outer *SymbolTable) *SymbolTable {
+	symbolTable := NewSymbolTable()
+
+	symbolTable.OuterTable = outer
+
+	return symbolTable
+
 }
