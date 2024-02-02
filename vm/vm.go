@@ -269,8 +269,8 @@ func (self *VM) Run() error {
 
 		case code.OpReturn:
 
-			self.popFrame()
-			self.pop()
+			frame := self.popFrame()
+			self.stackPointer = frame.basePointer - 1
 
 			err := self.push(Null)
 
