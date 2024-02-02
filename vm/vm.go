@@ -287,6 +287,23 @@ func (self *VM) Run() error {
 			frame := self.currentFrame()
 
 			self.stack[frame.basePointer+int(localIndex)] = self.pop()
+
+		case code.OpGetLocal:
+
+			localIndex := code.ReadUint8(instructions[indexPointer+1:])
+
+			self.currentFrame().indexPointer += 1
+
+			frame := self.currentFrame()
+
+			localBinding := self.stack[frame.basePointer+int(localIndex)]
+
+			err := self.push(localBinding)
+
+			if err != nil {
+				return err
+			}
+
 		}
 	}
 
