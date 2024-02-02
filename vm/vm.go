@@ -258,8 +258,8 @@ func (self *VM) Run() error {
 
 			returnValue := self.pop()
 
-			self.popFrame()
-			self.pop()
+			frame := self.popFrame()
+			self.stackPointer = frame.basePointer - 1
 
 			err := self.push(returnValue)
 
