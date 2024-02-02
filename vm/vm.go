@@ -244,6 +244,7 @@ func (self *VM) Run() error {
 
 		case code.OpCall:
 
+			self.currentFrame().indexPointer += 1
 			fn, ok := self.stack[self.stackPointer-1].(*object.CompiledFunction)
 
 			if !ok {
