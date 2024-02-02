@@ -11,7 +11,7 @@ import (
 	"github.com/Neal-C/compiler-in-go/parser"
 )
 
-type VmTestCase struct {
+type vmTestCase struct {
 	input    string
 	expected any
 }
@@ -39,7 +39,7 @@ func testIntegerObject(expected int64, actual object.Object) error {
 
 }
 
-func runVmTests(t *testing.T, tableTests []VmTestCase) {
+func runVmTests(t *testing.T, tableTests []vmTestCase) {
 	t.Helper()
 
 	for _, tt := range tableTests {
@@ -148,7 +148,7 @@ func testExpectedObject(t *testing.T, expected any, actual object.Object) {
 }
 
 func TestIntegerArithmetic(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{"1", 1},
 		{"2", 2},
 		{"1 + 2", 3},
@@ -171,7 +171,7 @@ func TestIntegerArithmetic(t *testing.T) {
 }
 
 func TestBooleanExpression(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{"true", true},
 		{"false", false},
 		{"1 < 2", true},
@@ -218,7 +218,7 @@ func testBooleanObject(expected bool, actual object.Object) error {
 }
 
 func TestConditionals(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{"if (true) { 10 }", 10},
 		{"if (true) { 10 } else { 20 }", 10},
 		{"if (false) { 10 } else { 20 } ", 20},
@@ -235,7 +235,7 @@ func TestConditionals(t *testing.T) {
 }
 
 func TestGlobalLetStatements(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{"let one = 1; one;", 1},
 		{"let one = 1; let two = 2; one + two;", 3},
 		{"let one = 1; let two = one + one; one + two;", 3},
@@ -245,7 +245,7 @@ func TestGlobalLetStatements(t *testing.T) {
 }
 
 func TestStringExpressions(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{`"monkey"`, "monkey"},
 		{`"mon" + "key"`, "monkey"},
 		{`"mon" + "key" + "banana"`, "monkeybanana"},
@@ -269,7 +269,7 @@ func testStringObject(expected string, actual object.Object) error {
 }
 
 func TestArrayLiterals(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{input: "[]", expected: []int{}},
 		{input: "[1, 2, 3]", expected: []int{1, 2, 3}},
 		{"[1 + 2, 3 * 4, 5 + 6]", []int{3, 12, 11}},
@@ -279,7 +279,7 @@ func TestArrayLiterals(t *testing.T) {
 }
 
 func TestHashLiterals(t *testing.T) {
-	testable := []VmTestCase{
+	testable := []vmTestCase{
 		{
 			input:    "{}",
 			expected: map[object.HashKey]int64{},
@@ -304,7 +304,7 @@ func TestHashLiterals(t *testing.T) {
 }
 
 func TestIndexExpressions(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{"[1, 2, 3][1]", 2},
 		{"[1, 2, 3][0 + 2]", 3},
 		{"[[1, 1, 1]][0][0]", 1},
@@ -321,7 +321,7 @@ func TestIndexExpressions(t *testing.T) {
 }
 
 func TestCallingFunctionsWithoutArguments(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{
 			input: `
 					let fivePlusTen = fn() { return 5 + 10 };
@@ -352,7 +352,7 @@ func TestCallingFunctionsWithoutArguments(t *testing.T) {
 }
 
 func TestFunctionsWithReturnStatements(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{
 			input: `
 				let earlyExit = fn() { return 99; 100; };
@@ -373,7 +373,7 @@ func TestFunctionsWithReturnStatements(t *testing.T) {
 }
 
 func TestFunctionsWithoutReturnValue(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{
 			input: `
 				let noReturn = fn() { };
@@ -396,11 +396,21 @@ func TestFunctionsWithoutReturnValue(t *testing.T) {
 }
 
 func TestFirstClassCitizenFunctions(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{
 			input: `
 				let returnsOne = fn() { 1; };
 				let returnsOneReturner = fn() { returnsOne; };
+				returnsOneReturner()();
+				`,
+			expected: 1,
+		},
+		{
+			input: `
+				let returnsOneReturner = fn() {
+				let returnsOne = fn() { 1; };
+				returnsOne;
+				};
 				returnsOneReturner()();
 				`,
 			expected: 1,
@@ -411,7 +421,7 @@ func TestFirstClassCitizenFunctions(t *testing.T) {
 }
 
 func TestCallingFunctionsWithBindings(t *testing.T) {
-	testTable := []VmTestCase{
+	testTable := []vmTestCase{
 		{
 			input: `
 				let one = fn() { let one = 1; one };
