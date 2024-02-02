@@ -317,9 +317,8 @@ func (self *Compiler) Compile(node ast.Node) error {
 			self.emit(code.OpReturn)
 		}
 
-		instructions := self.leaveScope()
-
 		numberOfLocals := self.symbolTable.numberOfDefinitions
+		instructions := self.leaveScope()
 
 		compiledFn := &object.CompiledFunction{
 			Instructions:   instructions,
