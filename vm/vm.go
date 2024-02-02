@@ -278,6 +278,15 @@ func (self *VM) Run() error {
 				return err
 			}
 
+		case code.OpSetLocal:
+
+			localIndex := code.ReadUint8(instructions[indexPointer+1:])
+
+			self.currentFrame().indexPointer += 1
+
+			frame := self.currentFrame()
+
+			self.stack[frame.basePointer+int(localIndex)] = self.pop()
 		}
 	}
 
