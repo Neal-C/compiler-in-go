@@ -253,7 +253,7 @@ func (self *VM) Run() error {
 			newFrame := NewFrame(fn, self.stackPointer)
 
 			self.pushFrame(newFrame)
-
+			self.stackPointer = newFrame.basePointer + fn.NumberOfLocals
 		case code.OpReturnValue:
 
 			returnValue := self.pop()
