@@ -248,16 +248,12 @@ func (self *VM) Run() error {
 
 			self.currentFrame().indexPointer += 1
 
-			fn, ok := self.stack[self.stackPointer-1-int(numberOfArguments)].(*object.CompiledFunction)
+			err := self.callFunction(int(numberOfArguments))
 
-			if !ok {
-				return fmt.Errorf("calling a non-function")
+			if err != nil {
+				return err
 			}
 
-			newFrame := NewFrame(fn, self.stackPointer)
-
-			self.pushFrame(newFrame)
-			self.stackPointer = newFrame.basePointer + fn.NumberOfLocals
 		case code.OpReturnValue:
 
 			returnValue := self.pop()
@@ -557,4 +553,20 @@ func (self *VM) pushFrame(frame *Frame) {
 func (self *VM) popFrame() *Frame {
 	self.framesIndex--
 	return self.frames[self.framesIndex]
+}
+
+func (self *VM) callFunction(numberOfArguments int) error {
+
+	fn, ok := self.stack[(self.stackPointer-1)-numberOfArguments].(*object.CompiledFunction)
+
+	if !ok {
+		return fmt.Errorf("calling a non-function")
+	}
+
+	newFrame := NewFrame(fn, self.stackPointer-numberOfArguments)
+
+	self.pushFrame(newFrame)
+	self.stackPointer = newFrame.basePointer + fn.NumberOfLocals
+
+	return nil
 }
