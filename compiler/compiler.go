@@ -303,6 +303,10 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 		self.enterScope()
 
+		for _, param := range node.Parameters {
+			self.symbolTable.Define(param.Value)
+		}
+
 		err := self.Compile(node.Body)
 
 		if err != nil {
