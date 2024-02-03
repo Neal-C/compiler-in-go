@@ -244,8 +244,11 @@ func (self *VM) Run() error {
 
 		case code.OpCall:
 
+			numberOfArguments := code.ReadUint8(instructions[indexPointer+1:])
+
 			self.currentFrame().indexPointer += 1
-			fn, ok := self.stack[self.stackPointer-1].(*object.CompiledFunction)
+
+			fn, ok := self.stack[self.stackPointer-1-int(numberOfArguments)].(*object.CompiledFunction)
 
 			if !ok {
 				return fmt.Errorf("calling a non-function")
