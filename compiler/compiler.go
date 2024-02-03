@@ -344,7 +344,15 @@ func (self *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
-		self.emit(code.OpCall)
+		for _, arg := range node.Arguments {
+			err := self.Compile(arg)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		self.emit(code.OpCall, len(node.Arguments))
 
 	}
 
