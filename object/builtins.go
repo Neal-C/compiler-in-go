@@ -33,3 +33,15 @@ var Builtins = []struct {
 func newError(format string, a ...any) *Error {
 	return &Error{Message: fmt.Sprintf(format, a...)}
 }
+
+func GetBuiltinByName(name string) *Builtin {
+
+	for _, definition := range Builtins {
+		if definition.Name == name {
+			return definition.Builtin
+		}
+	}
+
+	return nil
+
+}
