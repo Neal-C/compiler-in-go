@@ -39,6 +39,97 @@ var Builtins = []struct {
 			},
 		},
 	},
+	{
+		Name: "first",
+		Builtin: &Builtin{
+			Fn: func(args ...Object) Object {
+				if len(args) != 1 {
+					return newError("wrong number of arguments. got=%d, want=1", len(args))
+				}
+
+				if args[0].Type() != ARRAY_OBJ {
+					return newError("argument to first must be an ARRAY, got %s", args[0].Type())
+				}
+
+				myArray := args[0].(*Array)
+
+				if len(myArray.Elements) > 0 {
+					return myArray.Elements[0]
+				}
+
+				return nil
+			},
+		},
+	},
+	{
+		Name: "last",
+		Builtin: &Builtin{
+			Fn: func(args ...Object) Object {
+				if len(args) != 1 {
+					return newError("wrong number of arguments. got=%d, want=1", len(args))
+				}
+
+				if args[0].Type() != ARRAY_OBJ {
+					return newError("argument to last must be an ARRAY, got %s", args[0].Type())
+				}
+
+				myArray := args[0].(*Array)
+				length := len(myArray.Elements)
+				if len(myArray.Elements) > 0 {
+					return myArray.Elements[length-1]
+				}
+
+				return nil
+			},
+		},
+	},
+	{
+		Name: "rest",
+		Builtin: &Builtin{
+			Fn: func(args ...Object) Object {
+				if len(args) != 1 {
+					return newError("wrong number of arguments. got=%d, want=1", len(args))
+				}
+
+				if args[0].Type() != ARRAY_OBJ {
+					return newError("argument to rest must be an ARRAY, got %s", args[0].Type())
+				}
+
+				myArray := args[0].(*Array)
+				length := len(myArray.Elements)
+				if len(myArray.Elements) > 0 {
+					newElements := make([]Object, length-1)
+					copy(newElements, myArray.Elements[1:length])
+					return &Array{Elements: newElements}
+				}
+
+				return nil
+			},
+		},
+	},
+	{
+		Name: "push",
+		Builtin: &Builtin{
+			Fn: func(args ...Object) Object {
+				if len(args) != 2 {
+					return newError("wrong number of arguments. got=%d, want=2", len(args))
+				}
+
+				if args[0].Type() != ARRAY_OBJ {
+					return newError("argument to push must be an ARRAY, got %s", args[0].Type())
+				}
+
+				myArray := args[0].(*Array)
+				length := len(myArray.Elements)
+
+				newElements := make([]Object, length+1)
+				copy(newElements, myArray.Elements)
+				newElements[length] = args[1]
+				return &Array{Elements: newElements}
+
+			},
+		},
+	},
 }
 
 func newError(format string, a ...any) *Error {
