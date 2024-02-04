@@ -309,7 +309,11 @@ func applyFunction(fnCall object.Object, args []object.Object) object.Object {
 		return unwrapReturnValue(evaluated)
 	case *object.Builtin:
 
-		return fn.Fn(args...)
+		if result := fn.Fn(args...); result != nil {
+			return result
+		}
+
+		return nil
 
 	default:
 
