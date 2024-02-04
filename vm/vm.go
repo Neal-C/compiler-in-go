@@ -563,6 +563,11 @@ func (self *VM) callFunction(numberOfArguments int) error {
 		return fmt.Errorf("calling a non-function")
 	}
 
+	if fn.NumberOfParameters != numberOfArguments {
+		return fmt.Errorf("wrong number of arguments: want=%d, got=%d",
+			fn.NumberOfParameters, numberOfArguments)
+	}
+
 	newFrame := NewFrame(fn, self.stackPointer-numberOfArguments)
 
 	self.pushFrame(newFrame)

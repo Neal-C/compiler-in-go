@@ -188,8 +188,9 @@ func (self *Hash) Inspect() string {
 }
 
 type CompiledFunction struct {
-	Instructions   code.Instructions
-	NumberOfLocals int
+	Instructions       code.Instructions
+	NumberOfLocals     int
+	NumberOfParameters int
 }
 
 func (self *CompiledFunction) Type() ObjectType {

@@ -325,8 +325,9 @@ func (self *Compiler) Compile(node ast.Node) error {
 		instructions := self.leaveScope()
 
 		compiledFn := &object.CompiledFunction{
-			Instructions:   instructions,
-			NumberOfLocals: numberOfLocals,
+			Instructions:       instructions,
+			NumberOfLocals:     numberOfLocals,
+			NumberOfParameters: len(node.Parameters),
 		}
 
 		self.emit(code.OpConstant, self.addConstants(compiledFn))
