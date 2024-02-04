@@ -28,6 +28,17 @@ var Builtins = []struct {
 			},
 		},
 	},
+	{
+		Name: "puts",
+		Builtin: &Builtin{
+			Fn: func(args ...Object) Object {
+				for _, arg := range args {
+					fmt.Println(arg.Inspect())
+				}
+				return nil
+			},
+		},
+	},
 }
 
 func newError(format string, a ...any) *Error {
