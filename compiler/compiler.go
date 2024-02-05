@@ -237,11 +237,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 			return fmt.Errorf("undefined variable : %s", node.Value)
 		}
 
-		if symbol.Scope == GlobalScope {
-			self.emit(code.OpGetGlobal, symbol.Index)
-		} else {
-			self.emit(code.OpGetLocal, symbol.Index)
-		}
+		self.loadSymbol(symbol)
 	case *ast.StringLiteral:
 		str := &object.String{Value: node.Value}
 
