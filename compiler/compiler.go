@@ -39,11 +39,17 @@ func New() *Compiler {
 		previousInstruction: EmittedInstruction{},
 	}
 
+	symbolTable := NewSymbolTable()
+
+	for index, value := range object.Builtins {
+		symbolTable.DefineBuiltin(index, value.Name)
+	}
+
 	return &Compiler{
 		constants:   []object.Object{},
-		symbolTable: NewSymbolTable(),
 		scopes:      []CompilationScope{mainScope},
 		scopeIndex:  0,
+		symbolTable: symbolTable,
 	}
 }
 
