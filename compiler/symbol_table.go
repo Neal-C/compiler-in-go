@@ -65,7 +65,7 @@ func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
 }
 
 func (self *SymbolTable) DefineBuiltin(index int, name string) Symbol {
-	symbol := Symbol{Name: name, Index: index}
+	symbol := Symbol{Name: name, Index: index, Scope: BuiltinScope}
 	self.store[name] = symbol
 	return symbol
 }
