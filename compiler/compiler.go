@@ -486,3 +486,14 @@ func (self *Compiler) replaceLastPopWithReturn() {
 	self.scopes[self.scopeIndex].lastInstruction.OpCode = code.OpReturnValue
 
 }
+
+func (self *Compiler) loadSymbol(symbl Symbol) {
+	switch symbl.Scope {
+	case GlobalScope:
+		self.emit(code.OpGetGlobal, symbl.Index)
+	case LocalScope:
+		self.emit(code.OpGetLocal, symbl.Index)
+	case BuiltinScope:
+		self.emit(code.OpGetBuiltin, symbl.Index)
+	}
+}
