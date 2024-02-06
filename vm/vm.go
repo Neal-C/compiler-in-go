@@ -248,7 +248,7 @@ func (self *VM) Run() error {
 
 			self.currentFrame().indexPointer += 1
 
-			err := self.callFunction(int(numberOfArguments))
+			err := self.executeCall(int(numberOfArguments))
 
 			if err != nil {
 				return err
@@ -567,23 +567,43 @@ func (self *VM) popFrame() *Frame {
 	return self.frames[self.framesIndex]
 }
 
-func (self *VM) callFunction(numberOfArguments int) error {
+func (self *VM) callFunction(callee *object.CompiledFunction, numberOfArguments int) error {
 
-	fn, ok := self.stack[(self.stackPointer-1)-numberOfArguments].(*object.CompiledFunction)
-
-	if !ok {
-		return fmt.Errorf("calling a non-function")
-	}
-
-	if fn.NumberOfParameters != numberOfArguments {
+	if callee.NumberOfParameters != numberOfArguments {
 		return fmt.Errorf("wrong number of arguments: want=%d, got=%d",
-			fn.NumberOfParameters, numberOfArguments)
+			callee.NumberOfParameters, numberOfArguments)
 	}
 
-	newFrame := NewFrame(fn, self.stackPointer-numberOfArguments)
+	newFrame := NewFrame(callee, self.stackPointer-numberOfArguments)
 
 	self.pushFrame(newFrame)
-	self.stackPointer = newFrame.basePointer + fn.NumberOfLocals
+	self.stackPointer = newFrame.basePointer + callee.NumberOfLocals
 
+	return nil
+}
+
+func (self *VM) executeCall(numberOfArguments int) error {
+
+	callee := self.stack[(self.stackPointer-1)-numberOfArguments]
+
+	switch callee := callee.(type) {
+	case *object.CompiledFunction:
+		return self.callFunction(callee, numberOfArguments)
+	case *object.Builtin:
+		return self.callBuiltin(callee, numberOfArguments)
+	default:
+		return fmt.Errorf("calling a non-function or non-buitin")
+	}
+}
+
+func (self *VM) callBuiltin(callee *object.Builtin, numberOfArguments int) error {
+	args := self.stack[self.stackPointer-numberOfArguments : self.stackPointer]
+	result := callee.Fn(args...)
+	self.stackPointer = self.stackPointer - numberOfArguments - 1
+	if result != nil {
+		self.push(result)
+	} else {
+		self.push(Null)
+	}
 	return nil
 }
