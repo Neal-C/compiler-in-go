@@ -304,6 +304,18 @@ func (self *VM) Run() error {
 				return err
 			}
 
+		case code.OpGetBuiltin:
+
+			builtinIndex := code.ReadUint8(instructions[indexPointer+1:])
+			self.currentFrame().indexPointer += 1
+
+			definition := object.Builtins[builtinIndex]
+
+			err := self.push(definition.Builtin)
+
+			if err != nil {
+				return err
+			}
 		}
 	}
 
