@@ -108,11 +108,11 @@ func Make(op Opcode, operands ...int) []byte {
 	instruction := make([]byte, instructionLen)
 	instruction[0] = byte(op)
 
+	offset := 1
+
 	for index, operand := range operands {
 
 		width := definition.OperandsWidth[index]
-
-		offset := 1
 
 		switch width {
 		case 2:
@@ -163,6 +163,8 @@ func (self Instructions) fmtInstruction(definition *Definition, operands []int) 
 		return definition.Name
 	case 1:
 		return fmt.Sprintf("%s %d", definition.Name, operands[0])
+	case 2:
+		return fmt.Sprintf("%s %d %d", definition.Name, operands[0], operands[1])
 	}
 
 	return fmt.Sprintf("ERROR: unhandled operandCount for %s\n", definition.Name)
@@ -186,10 +188,10 @@ func ReadOperands(definition *Definition, instructions Instructions) ([]int, int
 	return operands, offset
 }
 
-func ReadUint16(instruction Instructions) uint16 {
-	return binary.BigEndian.Uint16(instruction)
+func ReadUint16(instructions Instructions) uint16 {
+	return binary.BigEndian.Uint16(instructions)
 }
 
 func ReadUint8(instructions Instructions) uint8 {
-	return uint8(instructions[0])
+	return instructions[0]
 }
