@@ -936,7 +936,7 @@ func TestClosures(t *testing.T) {
 				},
 				[]code.Instructions{
 					code.Make(code.OpGetLocal, 0),
-					code.Make(code.OpClosure, 0, 0),
+					code.Make(code.OpClosure, 0, 1),
 					code.Make(code.OpReturnValue),
 				},
 			},

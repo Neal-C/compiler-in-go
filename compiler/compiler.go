@@ -323,8 +323,13 @@ func (self *Compiler) Compile(node ast.Node) error {
 			self.emit(code.OpReturn)
 		}
 
+		freeSymbols := self.symbolTable.FreeSymbols
 		numberOfLocals := self.symbolTable.numberOfDefinitions
 		instructions := self.leaveScope()
+
+		for _, symbol := range freeSymbols {
+			self.loadSymbol(symbol)
+		}
 
 		compiledFn := &object.CompiledFunction{
 			Instructions:       instructions,
@@ -334,7 +339,7 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 		fnIndex := self.addConstants(compiledFn)
 
-		self.emit(code.OpClosure, fnIndex, 0)
+		self.emit(code.OpClosure, fnIndex, len(freeSymbols))
 
 	case *ast.ReturnStatement:
 
@@ -493,5 +498,9 @@ func (self *Compiler) loadSymbol(symbl Symbol) {
 		self.emit(code.OpGetLocal, symbl.Index)
 	case BuiltinScope:
 		self.emit(code.OpGetBuiltin, symbl.Index)
+	case FreeScope:
+		self.emit(code.OpGetFree, symbl.Index)
+	default:
+		fmt.Println("[*Compiler::loadSymbol] : unhandled case")
 	}
 }
