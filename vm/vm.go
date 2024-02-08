@@ -25,27 +25,28 @@ type VM struct {
 }
 
 type Frame struct {
-	fn           *object.CompiledFunction
+	closureFn    *object.Closure
 	indexPointer int
 	basePointer  int
 }
 
-func NewFrame(fn *object.CompiledFunction, basePointer int) *Frame {
+func NewFrame(closureFn *object.Closure, basePointer int) *Frame {
 	return &Frame{
-		fn:           fn,
+		closureFn:    closureFn,
 		indexPointer: -1,
 		basePointer:  basePointer,
 	}
 }
 
 func (self *Frame) Instructions() code.Instructions {
-	return self.fn.Instructions
+	return self.closureFn.Fn.Instructions
 }
 
 func New(bytecode *compiler.ByteCode) *VM {
 
 	mainFn := &object.CompiledFunction{Instructions: bytecode.Instructions}
-	mainFrame := NewFrame(mainFn, 0)
+	mainClosure := &object.Closure{Fn: mainFn}
+	mainFrame := NewFrame(mainClosure, 0)
 
 	frames := make([]*Frame, MaxFrames)
 	frames[0] = mainFrame
@@ -316,6 +317,20 @@ func (self *VM) Run() error {
 			if err != nil {
 				return err
 			}
+
+		case code.OpClosure:
+
+			constantIndex := code.ReadUint16(instructions[indexPointer+1:])
+
+			_ = code.ReadUint8(instructions[indexPointer+3:])
+
+			self.currentFrame().indexPointer += 3
+
+			err := self.pushClosure(int(constantIndex))
+
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -567,17 +582,17 @@ func (self *VM) popFrame() *Frame {
 	return self.frames[self.framesIndex]
 }
 
-func (self *VM) callFunction(callee *object.CompiledFunction, numberOfArguments int) error {
+func (self *VM) callClosure(closure *object.Closure, numberOfArguments int) error {
 
-	if callee.NumberOfParameters != numberOfArguments {
+	if closure.Fn.NumberOfParameters != numberOfArguments {
 		return fmt.Errorf("wrong number of arguments: want=%d, got=%d",
-			callee.NumberOfParameters, numberOfArguments)
+			closure.Fn.NumberOfParameters, numberOfArguments)
 	}
 
-	newFrame := NewFrame(callee, self.stackPointer-numberOfArguments)
+	newFrame := NewFrame(closure, self.stackPointer-numberOfArguments)
 
 	self.pushFrame(newFrame)
-	self.stackPointer = newFrame.basePointer + callee.NumberOfLocals
+	self.stackPointer = newFrame.basePointer + closure.Fn.NumberOfLocals
 
 	return nil
 }
@@ -587,8 +602,8 @@ func (self *VM) executeCall(numberOfArguments int) error {
 	callee := self.stack[(self.stackPointer-1)-numberOfArguments]
 
 	switch callee := callee.(type) {
-	case *object.CompiledFunction:
-		return self.callFunction(callee, numberOfArguments)
+	case *object.Closure:
+		return self.callClosure(callee, numberOfArguments)
 	case *object.Builtin:
 		return self.callBuiltin(callee, numberOfArguments)
 	default:
@@ -606,4 +621,18 @@ func (self *VM) callBuiltin(callee *object.Builtin, numberOfArguments int) error
 		self.push(Null)
 	}
 	return nil
+}
+
+func (self *VM) pushClosure(constantIndex int) error {
+	constant := self.constants[constantIndex]
+
+	fn, ok := constant.(*object.CompiledFunction)
+
+	if !ok {
+		return fmt.Errorf("not a function: %v", constant)
+	}
+
+	closure := &object.Closure{Fn: fn}
+
+	return self.push(closure)
 }
