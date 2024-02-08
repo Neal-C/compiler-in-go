@@ -332,7 +332,9 @@ func (self *Compiler) Compile(node ast.Node) error {
 			NumberOfParameters: len(node.Parameters),
 		}
 
-		self.emit(code.OpConstant, self.addConstants(compiledFn))
+		fnIndex := self.addConstants(compiledFn)
+
+		self.emit(code.OpClosure, fnIndex, 0)
 
 	case *ast.ReturnStatement:
 
