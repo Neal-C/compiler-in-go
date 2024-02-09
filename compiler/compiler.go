@@ -213,13 +213,12 @@ func (self *Compiler) Compile(node ast.Node) error {
 		}
 	case *ast.LetStatement:
 
+		symbol := self.symbolTable.Define(node.Name.Value)
 		err := self.Compile(node.Value)
 
 		if err != nil {
 			return err
 		}
-
-		symbol := self.symbolTable.Define(node.Name.Value)
 
 		if symbol.Scope == GlobalScope {
 
