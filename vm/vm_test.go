@@ -53,6 +53,18 @@ func runVmTests(t *testing.T, tableTests []vmTestCase) {
 			t.Fatalf("compiler error: %s", err)
 		}
 
+		// bytecode print/dump into the terminal
+		for i, constant := range myCompiler.ByteCode().Constants {
+			fmt.Printf("CONSTANT %d %p (%T):\n", i, constant, constant)
+			switch constant := constant.(type) {
+			case *object.CompiledFunction:
+				fmt.Printf(" Instructions:\n%s", constant.Instructions)
+			case *object.Integer:
+				fmt.Printf(" Value: %d\n", constant.Value)
+			}
+			fmt.Printf("\n")
+		}
+
 		myVM := New(myCompiler.ByteCode())
 
 		err = myVM.Run()
@@ -746,6 +758,22 @@ func TestRecursiveFunctions(t *testing.T) {
 						countDown(1);
 					};
 					wrapper();`,
+			expected: 0,
+		},
+		{
+			input: `
+					let wrapper = fn() {
+						let countDown = fn(x) {
+							if (x == 0) {
+							return 0;
+							} else {
+							countDown(x - 1);
+							}
+						};
+					countDown(1);
+					};
+					wrapper();
+					`,
 			expected: 0,
 		},
 	}
