@@ -718,3 +718,23 @@ func TestClosures(t *testing.T) {
 
 	runVmTests(t, testTable)
 }
+
+func TestRecursiveFunctions(t *testing.T) {
+	testTable := []vmTestCase{
+		{
+			input: `
+					let countDown = fn(x) {
+						if (x == 0) {
+						return 0;
+						} else {
+						countDown(x - 1);
+						}
+					};
+					countDown(1);
+					`,
+			expected: 0,
+		},
+	}
+
+	runVmTests(t, testTable)
+}
