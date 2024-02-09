@@ -322,11 +322,24 @@ func (self *VM) Run() error {
 
 			constantIndex := code.ReadUint16(instructions[indexPointer+1:])
 
-			_ = code.ReadUint8(instructions[indexPointer+3:])
+			numberOfFreeVariables := code.ReadUint8(instructions[indexPointer+3:])
 
 			self.currentFrame().indexPointer += 3
 
-			err := self.pushClosure(int(constantIndex))
+			err := self.pushClosure(int(constantIndex), int(numberOfFreeVariables))
+
+			if err != nil {
+				return err
+			}
+
+		case code.OpGetFree:
+
+			freeIndex := code.ReadUint8(instructions[indexPointer+1:])
+			self.currentFrame().indexPointer += 1
+
+			currentClosure := self.currentFrame().closureFn
+
+			err := self.push(currentClosure.Free[freeIndex])
 
 			if err != nil {
 				return err
@@ -623,7 +636,7 @@ func (self *VM) callBuiltin(callee *object.Builtin, numberOfArguments int) error
 	return nil
 }
 
-func (self *VM) pushClosure(constantIndex int) error {
+func (self *VM) pushClosure(constantIndex int, numberOfFreeVariables int) error {
 	constant := self.constants[constantIndex]
 
 	fn, ok := constant.(*object.CompiledFunction)
@@ -632,7 +645,15 @@ func (self *VM) pushClosure(constantIndex int) error {
 		return fmt.Errorf("not a function: %v", constant)
 	}
 
-	closure := &object.Closure{Fn: fn}
+	freeVariables := make([]object.Object, numberOfFreeVariables)
+
+	for i := 0; i < numberOfFreeVariables; i++ {
+		freeVariables[i] = self.stack[self.stackPointer-numberOfFreeVariables+i]
+	}
+
+	self.stackPointer = self.stackPointer - numberOfFreeVariables
+
+	closure := &object.Closure{Fn: fn, Free: freeVariables}
 
 	return self.push(closure)
 }
