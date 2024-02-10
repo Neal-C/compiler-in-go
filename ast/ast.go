@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/Neal-C/compiler-in-go/token"
 	"strings"
 )
@@ -254,6 +255,7 @@ type FunctionLiteral struct {
 	Token      token.Token // the fn keyword
 	Parameters []*Identifier
 	Body       *BlockStatement
+	Name       string
 }
 
 func (self *FunctionLiteral) expressionNode() {}
@@ -272,6 +274,9 @@ func (self *FunctionLiteral) String() string {
 	}
 
 	out.WriteString(self.TokenLiteral())
+	if self.Name != "" {
+		out.WriteString(fmt.Sprintf("<%s>", self.Name))
+	}
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ","+BLANK_WHITESPACE))
 	out.WriteString(")" + BLANK_WHITESPACE)
