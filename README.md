@@ -47,7 +47,7 @@ docker build -t nealc:compiler-in-go .
 docker run -it --name nealc-compiler nealc:compiler-in-go
 # runs the image
 ```
-
+- builtin functions : puts, len, first, last, rest
 - features include : common data types, recursive functions, and closures ( for interesting reasons explained in the book, all functions are considered to be closures ! )
 - Check the test cases in ./**/*_test.go files to see what other behaviors and features are supported
 
@@ -58,13 +58,13 @@ puts("Hello!")
 puts(1234)
 # 1234
 # null
-let people = [{"name": "Alice", "age": 24},{"name": "Neal-C", "age": 999}, {"name": "Anna", "age": 22}];
+let people = [{"name": "Alice", "age": 24}, {"name": "Neal-C", "age": 999}];
 people[0]["name"];
 # Alice
 len(people)
-# 3
+# 2
 first(people)
-# {"name": "Alice", "age": 24}
+# {"name": "Neal-C", "age": 999}
 last(people)
 # {"name": "Anna", "age": 22} 
 if (true) { 42 } else { "never" };
