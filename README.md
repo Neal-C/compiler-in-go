@@ -48,7 +48,7 @@ docker run -it --name nealc-compiler nealc:compiler-in-go
 # runs the image
 ```
 
-- features include : common data types, recursive functions, and closures
+- features include : common data types, recursive functions, and closures ( for interesting reasons explained in the book, all functions are considered to be closures ! )
 - Check the test cases in ./**/*_test.go files to see what other behaviors and features are supported
 
 ```shell
@@ -81,6 +81,16 @@ let sum = fn(x,y) { return x + y };
 # CLOSURE[0xc000140060] 
 sum(a,b)
 # 42
+let countDown = fn(n) { if (n == 0) { puts(0) } else { puts(n); crackDown(n - 1) } }
+# CLOSURE[0xc0000d6080]
+countDown(5)
+# 5
+# 4
+# 3
+# 2
+# 1
+# 0
+# null
 flex
 # Whoops! compilation failed:
 # undefined variable : flex
