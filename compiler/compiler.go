@@ -304,6 +304,10 @@ func (self *Compiler) Compile(node ast.Node) error {
 
 		self.enterScope()
 
+		if node.Name != "" {
+			self.symbolTable.DefineFunctionName(node.Name)
+		}
+
 		for _, param := range node.Parameters {
 			self.symbolTable.Define(param.Value)
 		}
@@ -499,7 +503,9 @@ func (self *Compiler) loadSymbol(symbl Symbol) {
 		self.emit(code.OpGetBuiltin, symbl.Index)
 	case FreeScope:
 		self.emit(code.OpGetFree, symbl.Index)
+	case FunctionScope:
+		self.emit(code.OpCurrentClosure)
 	default:
-		fmt.Println("[*Compiler::loadSymbol] : unhandled case")
+		panic("[*Compiler::loadSymbol] : unhandled case")
 	}
 }
