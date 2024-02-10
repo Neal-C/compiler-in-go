@@ -81,7 +81,7 @@ let sum = fn(x,y) { return x + y };
 # CLOSURE[0xc000140060] 
 sum(a,b)
 # 42
-let countDown = fn(n) { if (n == 0) { puts(0) } else { puts(n); crackDown(n - 1) } }
+let countDown = fn(n) { if (n == 0) { puts(0) } else { puts(n); countDown(n - 1) } }
 # CLOSURE[0xc0000d6080]
 countDown(5)
 # 5
