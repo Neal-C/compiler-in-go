@@ -344,6 +344,13 @@ func (self *VM) Run() error {
 			if err != nil {
 				return err
 			}
+
+		case code.OpCurrentClosure:
+			currentClosure := self.currentFrame().closureFn
+			err := self.push(currentClosure)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
